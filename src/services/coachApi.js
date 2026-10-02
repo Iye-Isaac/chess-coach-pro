@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORAGE_KEYS } from '../storage/keys';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL?.replace(/\/$/, '');
 const publishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-const sessionKey = 'chesscoach.supabase.guest-session';
+const sessionKey = STORAGE_KEYS.supabaseGuestSession;
 
 export function isCoachBackendConfigured() {
   return Boolean(supabaseUrl && publishableKey);
