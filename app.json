@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Chess Coach Pro",
+    "slug": "chess-coach-pro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "chesscoachpro",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.chesscoachpro.app"
+    },
+    "android": {
+      "package": "com.chesscoachpro.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#111411"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f3366f9a-b4da-4433-a829-05dfcb1f8b10"
+      }
+    }
+  }
+}

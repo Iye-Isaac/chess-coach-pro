@@ -1,0 +1,3 @@
+[functions.chess-coach]
+verify_jwt = true
+entrypoint = "./functions/chess-coach/index.js"
