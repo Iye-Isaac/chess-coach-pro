@@ -4,6 +4,7 @@ import styles from './HomeScreen.styles';
 import { C, PIECE_NAMES } from '../theme';
 import { Badge, Button, SectionTitle, GameRow } from '../components';
 import { gameDate } from '../services/chessCom';
+import { getJSON, setJSON, STORAGE_KEYS } from '../storage/keys';
 
 export function HomeScreen({
   username,
@@ -13,9 +14,13 @@ export function HomeScreen({
   syncing,
   syncError,
   onOpenReview,
-  onTab
+  onTab,
+  profile,
+  onStartSkillCheck
 }) {
   const [input, setInput] = useState(username || '');
+  const [skillCheckDismissed, setSkillCheckDismissed] = useState(false);
+  useEffect(() => { getJSON(STORAGE_KEYS.skillCheckPromptDismissed, false).then(setSkillCheckDismissed); }, []);
   useEffect(() => {
     setInput(username || '');
   }, [username]);
@@ -28,6 +33,13 @@ export function HomeScreen({
       <View style={styles.heroRule} />
       <Text style={styles.heroFoot}>A better player is built one thoughtful move at a time.</Text>
     </View>
+
+    {profile && !profile.diagnosticDone && !skillCheckDismissed && <View style={styles.card}>
+      <Text style={styles.cardTitle}>Take the 2-minute skill check</Text>
+      <Text style={styles.cardCopy}>Five quick puzzles help us choose a helpful place to start. It works offline.</Text>
+      <Button title="Start skill check  →" onPress={onStartSkillCheck} />
+      <Pressable accessibilityRole="button" accessibilityLabel="Dismiss skill check reminder" onPress={() => { setSkillCheckDismissed(true); setJSON(STORAGE_KEYS.skillCheckPromptDismissed, true); }} style={{ alignSelf: 'center', padding: 8 }}><Text style={styles.linkText}>Maybe later</Text></Pressable>
+    </View>}
 
     {!username ? <View style={styles.card}>
       <View style={styles.cardTop}><View style={styles.cardIcon}><Text style={styles.cardIconText}>♟</Text></View>

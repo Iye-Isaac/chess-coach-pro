@@ -27,12 +27,12 @@ async function getGuestSession() {
   return next;
 }
 
-export async function requestGameAnalysis({ game, username }) {
+export async function requestGameAnalysis({ criticalMoments, stats, username }) {
   const session = await getGuestSession();
   const response = await fetch(`${supabaseUrl}/functions/v1/chess-coach`, {
     method: 'POST',
     headers: { apikey: publishableKey, Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ game, username }),
+    body: JSON.stringify({ criticalMoments, stats, username }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.error || 'The chess coach could not review this game. Please try again.');

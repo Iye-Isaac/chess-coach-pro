@@ -1,0 +1,174 @@
+{
+  "reviewReady": false,
+  "lessons": [
+    {
+      "id": "foundations-01-board",
+      "track": "foundations",
+      "order": 1,
+      "title": "Meet the board",
+      "summary": "Read the coordinates and find your way around the 64 squares.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "text": "The board has eight files, a through h, and eight ranks, 1 through 8. Each square has one coordinate, like e4." },
+        { "type": "demo", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": ["e2e4", "e7e5", "g1f3"], "text": "Follow the moves by their starting and ending squares. White always moves first." },
+        { "type": "text", "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1", "text": "After e2 to e4, the pawn sits on e4. The small coordinate labels help you name every square." },
+        { "type": "quiz", "question": "Which square is on file e and rank 4?", "options": ["e4", "4e", "d4"], "answerIndex": 0, "explain": "Files use letters and ranks use numbers, so the square is e4." }
+      ]
+    },
+    {
+      "id": "foundations-02-pieces",
+      "track": "foundations",
+      "order": 2,
+      "title": "How the pieces move",
+      "summary": "Learn the paths of pawns, knights, bishops, rooks, queens, and kings.",
+      "minutes": 5,
+      "steps": [
+        { "type": "text", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "text": "Rooks travel in straight lines, bishops diagonally, and queens combine both paths. They cannot jump over other pieces." },
+        { "type": "demo", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": ["d2d3", "d7d5", "c1f4", "c8f5"], "text": "Knights jump in an L shape. Bishops stay on the color of square where they began." },
+        { "type": "try", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "expect": ["e4"], "hint": "Move a pawn two squares forward from its starting square.", "wrongFeedback": "Try a legal pawn move from e2 to e4.", "successFeedback": "That is right. A pawn may move two squares on its first move." },
+        { "type": "quiz", "question": "Which piece can jump over other pieces?", "options": ["Bishop", "Knight", "Rook"], "answerIndex": 1, "explain": "The knight is the only piece that jumps over pieces." }
+      ]
+    },
+    {
+      "id": "foundations-03-checkmate",
+      "track": "foundations",
+      "order": 3,
+      "title": "Check, checkmate, and stalemate",
+      "summary": "Know when a king is threatened and when a game ends.",
+      "minutes": 5,
+      "steps": [
+        { "type": "text", "fen": "4k3/8/8/8/8/8/4R3/4K3 b - - 0 1", "text": "Check means the king is attacked. The player must move the king, block the attack, or capture the attacker." },
+        { "type": "demo", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": ["f2f3", "e7e5", "g2g4", "d8h4"], "text": "This quick game ends in checkmate: the king is in check and has no legal escape." },
+        { "type": "text", "fen": "7k/5K2/6Q1/8/8/8/8/8 b - - 0 1", "text": "Stalemate is different: the player to move is not in check but has no legal move. The game is a draw." },
+        { "type": "quiz", "question": "A player has no legal moves, but their king is not in check. What is it?", "options": ["Checkmate", "Stalemate", "Castling"], "answerIndex": 1, "explain": "Without check, no legal moves means stalemate and a draw." }
+      ]
+    },
+    {
+      "id": "foundations-04-castling",
+      "track": "foundations",
+      "order": 4,
+      "title": "Castle to safety",
+      "summary": "Use the king's special move to tuck it behind a rook.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "text": "Castling moves the king two squares toward a rook, then places that rook on the square the king crossed." },
+        { "type": "demo", "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "moves": ["e1g1", "e8c8"], "text": "White castles kingside; Black castles queenside. The king and rook must not have moved before." },
+        { "type": "quiz", "question": "Can a king castle out of check?", "options": ["Yes, if the rook has not moved", "No", "Only queenside"], "answerIndex": 1, "explain": "You cannot castle out of, through, or into check." },
+        { "type": "text", "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "text": "The squares between king and rook must be empty, and neither piece may have moved earlier." }
+      ]
+    },
+    {
+      "id": "foundations-05-en-passant",
+      "track": "foundations",
+      "order": 5,
+      "title": "En passant",
+      "summary": "Catch a pawn that just passed your pawn on its first move.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2", "text": "If an enemy pawn moves two squares and lands beside yours, you may capture it as if it had moved one square." },
+        { "type": "try", "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2", "expect": ["exd6"], "hint": "The white pawn on e5 can capture the pawn that just passed it.", "wrongFeedback": "Try the special diagonal capture from e5 to d6.", "successFeedback": "Correct. En passant is recorded as a pawn capture on d6." },
+        { "type": "text", "fen": "4k3/3P4/8/8/8/8/8/4K3 b - - 0 2", "text": "This capture is only available immediately on the next move. If you wait, the chance is gone." },
+        { "type": "quiz", "question": "When can you capture en passant?", "options": ["Any time later", "Only on the move immediately after the two-square pawn move", "Only when castling"], "answerIndex": 1, "explain": "En passant must be used immediately or it expires." }
+      ]
+    },
+    {
+      "id": "foundations-06-promotion",
+      "track": "foundations",
+      "order": 6,
+      "title": "Promote a pawn",
+      "summary": "Turn a pawn reaching the last rank into a powerful piece.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "4k3/P7/8/8/8/8/8/4K3 w - - 0 1", "text": "When a pawn reaches the far side of the board, it must promote to a queen, rook, bishop, or knight." },
+        { "type": "try", "fen": "4k3/P7/8/8/8/8/8/4K3 w - - 0 1", "expect": ["a8=Q+", "a8=R+", "a8=B", "a8=N"], "hint": "Advance the pawn on a7 to the last rank. A queen is usually strongest.", "wrongFeedback": "Move the pawn from a7 to a8 and choose a promoted piece.", "successFeedback": "Nice. Promotion can create a queen, or another piece when that is more useful." },
+        { "type": "demo", "fen": "4k3/P7/8/8/8/8/8/4K3 w - - 0 1", "moves": ["a7a8q"], "text": "The promotion piece is chosen as part of the pawn's move. Promotion to a queen is common." },
+        { "type": "quiz", "question": "Must you promote to a queen?", "options": ["Yes", "No, you may choose a rook, bishop, or knight", "No, the pawn stays a pawn"], "answerIndex": 1, "explain": "You may choose any of the four pieces, even if that choice is not a queen." }
+      ]
+    },
+    {
+      "id": "foundations-07-piece-values",
+      "track": "foundations",
+      "order": 7,
+      "title": "A guide to piece values",
+      "summary": "Use simple values to compare exchanges and spot hanging pieces.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "text": "A common guide is pawn 1, knight 3, bishop 3, rook 5, and queen 9. The king is priceless." },
+        { "type": "quiz", "question": "You can trade a rook for a bishop. Which piece is usually worth more?", "options": ["The rook", "The bishop", "They are always equal"], "answerIndex": 0, "explain": "A rook is commonly valued around five points, compared with three for a bishop." },
+        { "type": "text", "fen": "4k3/8/8/8/8/8/3q4/3RK2R w - - 0 1", "text": "These numbers are guides, not rules. A piece's safety, activity, and the position matter too." },
+        { "type": "quiz", "question": "What should you check before taking a piece?", "options": ["Whether it is defended and what can capture back", "Only its color", "Whether it is near the edge"], "answerIndex": 0, "explain": "Count defenders and attackers so a tempting capture does not lose material." }
+      ]
+    },
+    {
+      "id": "foundations-08-center",
+      "track": "foundations",
+      "order": 8,
+      "title": "Control the center",
+      "summary": "Central squares give your pieces more room and influence.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "text": "The central squares e4, d4, e5, and d5 are valuable. Pieces placed near the center can often reach more of the board." },
+        { "type": "demo", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": ["e2e4", "g8f6", "b1c3", "d7d5"], "text": "A central pawn claims space. Knights and other pieces can support or challenge that space." },
+        { "type": "try", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "expect": ["e4", "d4"], "hint": "Move one of the two central pawns two squares.", "wrongFeedback": "Try e2 to e4 or d2 to d4 to claim the center.", "successFeedback": "Good. Either central pawn move is a sound way to begin fighting for space." },
+        { "type": "quiz", "question": "Why are central squares useful?", "options": ["They give pieces influence over more squares", "They protect every piece automatically", "They prevent castling"], "answerIndex": 0, "explain": "A central piece usually controls more routes and can switch sides more quickly." }
+      ]
+    },
+    {
+      "id": "foundations-09-development",
+      "track": "foundations",
+      "order": 9,
+      "title": "Develop and castle",
+      "summary": "Bring pieces into the game, then secure your king.",
+      "minutes": 5,
+      "steps": [
+        { "type": "text", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "text": "Development means moving your knights and bishops from their starting squares to useful, active squares." },
+        { "type": "demo", "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": ["e2e4", "e7e5", "g1f3", "b8c6", "f1c4", "g8f6", "e1g1"], "text": "Develop pieces toward the center and castle to bring your king to safety." },
+        { "type": "quiz", "question": "Which plan is a strong opening habit?", "options": ["Move the same piece repeatedly", "Develop minor pieces and castle", "Bring the queen out first every time"], "answerIndex": 1, "explain": "Develop knights and bishops, contest the center, and castle when it is safe." },
+        { "type": "text", "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B5/5N2/PPPP1PPP/RNBQ1RK1 w kq - 4 4", "text": "Avoid launching an attack before your pieces can help. A developed team can defend and attack together." }
+      ]
+    },
+    {
+      "id": "foundations-10-back-rank",
+      "track": "foundations",
+      "order": 10,
+      "title": "A back-rank checkmate",
+      "summary": "Spot a king trapped behind its own pawns.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "6k1/5ppp/8/8/8/8/5PPP/4R1K1 w - - 0 1", "text": "A king on its back rank can be trapped by its own pawns. A rook or queen may be able to deliver mate along that rank." },
+        { "type": "try", "fen": "6k1/5ppp/8/8/8/8/5PPP/4R1K1 w - - 0 1", "expect": ["Re8#"], "hint": "The rook can travel up the e-file and attack the king across the back rank.", "wrongFeedback": "Look for a rook move to e8. The king has no safe square behind its pawns.", "successFeedback": "Checkmate. The rook checks along the eighth rank while the pawns block the king's escape." },
+        { "type": "text", "fen": "4R1k1/5ppp/8/8/8/8/5PPP/6K1 b - - 0 1", "text": "Back-rank danger is a reason to create luft: a safe pawn move can give your king an escape square." },
+        { "type": "quiz", "question": "What often traps a king in a back-rank mate?", "options": ["Its own pawns", "The center pawns", "A knight on the rim"], "answerIndex": 0, "explain": "Its own pawns can block every escape square behind it." }
+      ]
+    },
+    {
+      "id": "foundations-11-fork",
+      "track": "foundations",
+      "order": 11,
+      "title": "Find a fork",
+      "summary": "Attack two targets at once with one move.",
+      "minutes": 4,
+      "steps": [
+        { "type": "text", "fen": "3q4/6k1/8/8/5N2/8/8/4K3 w - - 0 1", "text": "A fork is one move that attacks two or more enemy pieces at the same time. Knights are especially good at forking." },
+        { "type": "demo", "fen": "3q4/6k1/8/8/5N2/8/8/4K3 w - - 0 1", "moves": ["f4e6"], "text": "Look for a move that creates two threats. Your opponent may save one target, but not both." },
+        { "type": "quiz", "question": "What makes a move a fork?", "options": ["It attacks two or more targets at once", "It moves a pawn backward", "It protects the king by castling"], "answerIndex": 0, "explain": "The double attack forces the opponent to choose which threat to answer." },
+        { "type": "text", "fen": "4k3/8/8/8/8/8/5N2/4K2r w - - 0 1", "text": "Before moving, check whether your piece will attack the king and another valuable target together." }
+      ]
+    },
+    {
+      "id": "foundations-12-pin-krk",
+      "track": "foundations",
+      "order": 12,
+      "title": "Pins and the king + rook mate idea",
+      "summary": "Restrict a piece with a pin, then learn the basic rook-and-king plan.",
+      "minutes": 6,
+      "steps": [
+        { "type": "text", "fen": "4k3/8/2n5/1B6/8/8/8/4K3 w - - 0 1", "text": "A pin happens when a piece cannot safely move because doing so would expose a more valuable piece or the king behind it." },
+        { "type": "demo", "fen": "4k3/8/2n5/1B6/8/8/8/4K3 w - - 0 1", "moves": ["b5c6"], "text": "Here the rook and king share a file. A rook can pin an enemy piece to its king along a rank, file, or diagonal." },
+        { "type": "text", "fen": "7k/8/5K2/8/8/8/8/R7 w - - 0 1", "text": "In king-and-rook versus king, use your king to help. Drive the opposing king toward an edge, then use the rook to cut off escape squares." },
+        { "type": "demo", "fen": "7k/8/5K2/8/8/8/8/R7 w - - 0 1", "moves": ["a1a7", "h8g8", "a7g7"], "text": "The rook takes away a rank, while your king controls nearby squares. Keep the rook protected as you shrink the box." },
+        { "type": "quiz", "question": "What helps you checkmate with king and rook?", "options": ["Use your king to support the rook and restrict the enemy king", "Chase the enemy king with the rook alone", "Trade the rook immediately"], "answerIndex": 0, "explain": "The king supports the rook, which cuts off escape squares and drives the enemy king to an edge." }
+      ]
+    }
+  ]
+}

@@ -15,6 +15,7 @@ import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ProgressScreen } from './src/screens/ProgressScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
 import { LearningScreen } from './src/screens/LearningScreen';
+import { LessonScreen } from './src/screens/LessonScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { fetchRecentGames, recentPlayerRating } from './src/services/chessCom';
 import { isCoachBackendConfigured } from './src/services/coachApi';
@@ -23,7 +24,6 @@ const TABS = [
   { id: 'review', mark: '◉', label: 'Review' },
   { id: 'train', mark: '♟', label: 'Train' },
   { id: 'play', mark: '♜', label: 'Play' },
-  { id: 'library', mark: '▤', label: 'Library' },
 ];
 
 
@@ -41,6 +41,12 @@ function App() {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState('');
   const [selectedGame, setSelectedGame] = useState(null);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const [skillCheckOpen, setSkillCheckOpen] = useState(false);
+  const [planTheme, setPlanTheme] = useState(null);
+  const [planTrack, setPlanTrack] = useState(null);
+  const [planCoachLaunch, setPlanCoachLaunch] = useState(0);
+  const [trainLaunch, setTrainLaunch] = useState(0);
   const [ready, setReady] = useState(false);
   useEffect(() => {
     (async () => {
@@ -93,12 +99,21 @@ function App() {
     setSelectedGame(game);
     setTab('game');
   };
-  const finishOnboarding = async next => {
-    setProfile(next);
+  const finishOnboarding = async (next, intent = null) => {
+    const merged = { ...profile, ...next };
+    setProfile(merged);
     setOnboardingDone(true);
-    setTab('home');
-    await Promise.all([AsyncStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(next)), AsyncStorage.setItem(STORAGE_KEYS.onboardingDone, 'yes')]);
+    setSkillCheckOpen(false);
+    setPlanTheme(null);
+    setPlanTrack(null);
+    if (intent?.kind === 'theme') { setPlanTheme(intent.theme); setTrainLaunch((value) => value + 1); setTab('train'); }
+    else if (intent?.kind === 'track' && intent.track === 'foundations') { setPlanTrack(intent.track); setTab('learning'); }
+    else if (intent?.kind === 'track') { setTab('train'); }
+    else if (intent?.kind === 'coach') { setPlanCoachLaunch((value) => value + 1); setTab('play'); }
+    else setTab('home');
+    await Promise.all([AsyncStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(merged)), AsyncStorage.setItem(STORAGE_KEYS.puzzleRating, String(merged.puzzleRating)), AsyncStorage.setItem(STORAGE_KEYS.onboardingDone, 'yes')]);
   };
+  const startSkillCheck = () => { setSkillCheckOpen(true); setTab('home'); };
   const updateProfile = async next => {
     setProfile(next);
     await AsyncStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(next));
@@ -135,16 +150,18 @@ function App() {
         <Text style={styles.bodyMuted}>Getting your training space ready…</Text>
       </View>
     )
-    : !onboardingDone
+    : skillCheckOpen
+      ? <OnboardingScreen key="skill-check" initialStep="diagnostic" profile={profile} onCancel={() => setSkillCheckOpen(false)} onFinish={finishOnboarding} />
+      : !onboardingDone
       ? <OnboardingScreen onFinish={finishOnboarding} />
       : tab === 'home'
-        ? <HomeScreen username={username} games={games} onConnect={connect} onRefresh={refresh} syncing={syncing} syncError={syncError} onOpenReview={openReview} onTab={setTab} />
+        ? <HomeScreen username={username} games={games} onConnect={connect} onRefresh={refresh} syncing={syncing} syncError={syncError} onOpenReview={openReview} onTab={setTab} profile={profile} onStartSkillCheck={startSkillCheck} />
         : tab === 'review'
           ? <ReviewScreen username={username} games={games} onOpenReview={openReview} syncing={syncing} onRefresh={refresh} backendReady={isCoachBackendConfigured()} />
           : tab === 'game' && selectedGame
             ? <GameReviewScreen key={selectedGame.url || selectedGame.end_time} game={selectedGame} username={username} onBack={() => setTab('review')} />
             : tab === 'train'
-        ? <TrainScreen onTab={setTab} profile={profile} />
+        ? <TrainScreen key={`train-${trainLaunch}`} onTab={setTab} profile={profile} initialTheme={planTheme} />
               : tab === 'play'
                 ? null
                 : tab === 'progress'
@@ -152,9 +169,11 @@ function App() {
                   : tab === 'history'
                     ? <HistoryScreen games={games} username={username} localGames={localGames} onOpenReview={openReview} onTab={setTab} />
                     : tab === 'learning'
-                      ? <LearningScreen onTab={setTab} profile={profile} />
+                      ? <LearningScreen key={`learning-${planTrack || 'default'}`} onTab={setTab} profile={profile} initialTrack={planTrack} onOpenLesson={(lesson) => { setSelectedLesson(lesson); setTab('lesson'); }} />
+                      : tab === 'lesson' && selectedLesson
+                        ? <LessonScreen key={selectedLesson} lessonId={selectedLesson} onBack={() => setTab('learning')} onNextLesson={(lesson) => setSelectedLesson(lesson)} />
                       : tab === 'profile'
-                        ? <ProfileScreen username={username} profile={profile} rating={recentPlayerRating(games, username)} onTab={setTab} onDisconnect={disconnect} onUpdateProfile={updateProfile} onRestart={restartOnboarding} />
+                        ? <ProfileScreen username={username} profile={profile} rating={recentPlayerRating(games, username)} onTab={setTab} onDisconnect={disconnect} onUpdateProfile={updateProfile} onRestart={restartOnboarding} onRetakeSkillCheck={startSkillCheck} />
                         : tab === 'setup'
                           ? (
                             <View style={styles.page}>
@@ -179,7 +198,7 @@ function App() {
                               </View>
                             </View>
                           )
-                          : <LibraryScreen onTab={setTab} />;
+                          : <LibraryScreen onTab={setTab} onBack={() => setTab('learning')} />;
   return (
     <SafeAreaView style={styles.app}>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
@@ -205,6 +224,8 @@ function App() {
           <View style={[styles.persistentPlayLayer, { display: tab === 'play' ? 'flex' : 'none' }]}>
             <PlayScreen
               playerRating={recentPlayerRating(games, username)}
+              startingRating={profile.startingRating}
+              coachPlanLaunch={planCoachLaunch}
               playerKey={username.toLowerCase()}
               onSaveGame={saveLocalGame}
               onOpenHistory={() => setTab('history')}

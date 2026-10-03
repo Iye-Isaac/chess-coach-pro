@@ -6,11 +6,12 @@ import styles from './TrainScreen.styles';
 import { STORAGE_KEYS, getJSON, setJSON } from '../storage/keys';
 import { Badge, Button, ChessBoard } from '../components';
 import { initialPuzzleRating, moveToUci, pickPuzzleSession, puzzlesForTheme, PUZZLE_THEMES, ratingAfterPuzzle, themeLabel, uciToMove } from '../puzzles/catalog';
+import { MistakeDrill } from '../training/MistakeDrill';
 
 const SESSION_LENGTH = 5;
 const OPPONENT_MOVE_DELAY = 450;
 
-export function TrainScreen({ onTab, profile }) {
+export function TrainScreen({ onTab, profile, initialTheme }) {
   const [section, setSection] = useState('puzzles');
   const [learnedCount, setLearnedCount] = useState(0);
   const [history, setHistory] = useState([]);
@@ -49,6 +50,7 @@ export function TrainScreen({ onTab, profile }) {
   const solvedCountRef = useRef(0);
   const streakRef = useRef(0);
   const attemptsRef = useRef(0);
+  const initialThemeStarted = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -77,6 +79,12 @@ export function TrainScreen({ onTab, profile }) {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [profile?.level]);
+
+  useEffect(() => {
+    if (!storageReady || !initialTheme || initialThemeStarted.current) return;
+    initialThemeStarted.current = true;
+    startSession(initialTheme);
+  }, [storageReady, initialTheme]);
 
   const clearPuzzleState = () => {
     setSelectedSquare(null);
@@ -369,11 +377,7 @@ export function TrainScreen({ onTab, profile }) {
           ))}
         </View>
       ) : section === 'mistakes' ? (
-        <View style={styles.card}>
-          <Text style={styles.eyebrow}>MY MISTAKES</Text>
-          <Text style={styles.cardTitle}>A review list is on the way.</Text>
-          <View style={styles.comingSoonBadge}><Text style={styles.comingSoonText}>Coming next</Text></View>
-        </View>
+        <MistakeDrill onTab={onTab} />
       ) : section === 'openings' ? (
         <View style={styles.card}>
           <Text style={styles.eyebrow}>OPENING PRACTICE</Text>

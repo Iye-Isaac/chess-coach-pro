@@ -1,0 +1,31 @@
+import { StyleSheet } from 'react-native';
+import { C, sharedStyles } from '../theme';
+
+export default { ...sharedStyles, ...StyleSheet.create({
+  container: { flex: 1 },
+  boardWrap: { paddingTop: 5, marginBottom: 12 },
+  demoTools: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 3, marginTop: 5 },
+  demoCount: { color: C.faint, fontSize: 9, fontWeight: '800', letterSpacing: 0.7 },
+  replayButton: { paddingVertical: 6, paddingHorizontal: 9, borderRadius: 8, backgroundColor: C.greenSoft },
+  replayText: { color: C.green, fontSize: 10, fontWeight: '800' },
+  captionCard: { padding: 15, backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 15 },
+  captionTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  stepType: { color: C.faint, fontSize: 9, fontWeight: '800', letterSpacing: 0.7 },
+  captionTitle: { color: C.ink, fontSize: 17, fontWeight: '700', lineHeight: 24, letterSpacing: -0.3, marginTop: 13 },
+  helperText: { color: C.muted, fontSize: 10, lineHeight: 15, marginTop: 11 },
+  inlineActions: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 10 },
+  answerText: { color: C.green, fontSize: 11, fontWeight: '800', flexShrink: 1 },
+  options: { gap: 8, marginTop: 13 },
+  option: { padding: 12, borderWidth: 1, borderColor: C.line, borderRadius: 10, backgroundColor: '#fbfbf8' },
+  optionChosen: { borderColor: C.amber, backgroundColor: C.amberSoft },
+  optionCorrect: { borderColor: C.green, backgroundColor: C.greenSoft },
+  optionText: { color: C.ink, fontSize: 12, fontWeight: '700' },
+  feedback: { backgroundColor: C.amberSoft, borderRadius: 10, padding: 11, marginTop: 12 },
+  feedbackSuccess: { backgroundColor: C.greenSoft },
+  feedbackText: { color: C.ink, fontSize: 11, lineHeight: 17 },
+  progressDots: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, marginTop: 14, marginBottom: 8 },
+  dot: { height: 6, width: 6, borderRadius: 3, backgroundColor: '#d5d7ce' },
+  dotActive: { width: 19, borderRadius: 4, backgroundColor: C.amber },
+  dotDone: { backgroundColor: C.green },
+  bottomAction: { marginTop: 'auto', paddingTop: 7, paddingBottom: 5 },
+}) };

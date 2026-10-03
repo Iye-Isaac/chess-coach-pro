@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import styles from './LibraryScreen.styles';
-import { C, PIECE_NAMES } from '../theme';
-import { Badge } from '../components';
+import { Badge, Button, SectionTitle } from '../components';
 import { resources } from '../data/resources';
 
 export function LibraryScreen({
-  onTab
+  onTab,
+  onBack
 }) {
   const [category, setCategory] = useState('ALL');
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);
   const visible = resources.filter(item => (category === 'ALL' || item.kind === category) && `${item.title} ${item.kind} ${item.author} ${item.note}`.toLowerCase().includes(query.toLowerCase()));
   if (selected) return <ScrollView contentContainerStyle={styles.page}>
-    <Pressable onPress={() => setSelected(null)} style={styles.backButton}><Text style={styles.backText}>‹  Library</Text></Pressable>
+    <Pressable accessibilityRole="button" accessibilityLabel="Back to library" onPress={() => setSelected(null)} style={styles.backButton}><Text style={styles.backText}>‹  Library</Text></Pressable>
     <View style={styles.pageIntro}><Badge tone="amber">{selected.kind} · STARTER GUIDE</Badge>
         <Text style={styles.pageTitle}>{selected.title}</Text>
         <Text style={styles.pageSubtitle}>{selected.author}</Text></View>
@@ -24,6 +24,7 @@ export function LibraryScreen({
         <Button title="Back to library" secondary onPress={() => setSelected(null)} /></View>
   </ScrollView>;
   return <ScrollView contentContainerStyle={styles.page}>
+    {!!onBack && <Pressable accessibilityRole="button" accessibilityLabel="Back to learning path" onPress={onBack} style={styles.backButton}><Text style={styles.backText}>‹  Learning path</Text></Pressable>}
     <View style={styles.pageIntro}><Badge tone="amber">A LIBRARY THAT GROWS WITH YOU</Badge>
         <Text style={styles.pageTitle}>Learn, your way.</Text>
         <Text style={styles.pageSubtitle}>A few good ideas to carry into your next game.</Text></View>
@@ -32,9 +33,9 @@ export function LibraryScreen({
         <Text style={styles.resourceFeatureCopy}>Build a clear foundation in openings, tactics, and endgames. Then connect the lessons to your own games.</Text>
         <Text style={styles.resourceFeatureMark}>♘</Text></View>
     <SectionTitle eyebrow="CURATED FOR YOUR STUDY" title="Explore the library" />
-    <TextInput value={query} onChangeText={setQuery} placeholder="Search lessons" placeholderTextColor="#a7a99f" style={styles.input} />
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRail}>{['ALL', 'OPENING', 'TACTICS', 'ENDGAME', 'BOOK'].map(item => <Pressable key={item} onPress={() => setCategory(item)} style={[styles.filterChip, category === item && styles.filterChipActive]}><Text style={[styles.filterText, category === item && styles.filterTextActive]}>{item}</Text></Pressable>)}</ScrollView>
-    {visible.map((item, index) => <Pressable key={item.title} onPress={() => setSelected(item)} style={({
+    <TextInput accessibilityLabel="Search library resources" value={query} onChangeText={setQuery} placeholder="Search lessons" placeholderTextColor="#a7a99f" style={styles.input} />
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRail}>{['ALL', 'OPENING', 'TACTICS', 'ENDGAME', 'BOOK'].map(item => <Pressable key={item} accessibilityRole="button" accessibilityLabel={`Show ${item.toLowerCase()} resources`} onPress={() => setCategory(item)} style={[styles.filterChip, category === item && styles.filterChipActive]}><Text style={[styles.filterText, category === item && styles.filterTextActive]}>{item}</Text></Pressable>)}</ScrollView>
+    {visible.map((item, index) => <Pressable key={item.title} accessibilityRole="button" accessibilityLabel={`Read ${item.title}`} onPress={() => setSelected(item)} style={({
       pressed
     }) => [styles.resourceCard, pressed && styles.pressed]}><View style={[styles.resourceIcon, index % 2 === 0 ? styles.resourceIconGreen : styles.resourceIconAmber]}><Text style={styles.resourceIconText}>{['♜', '♙', '♔', '✦'][index % 4]}</Text></View>
         <View style={{

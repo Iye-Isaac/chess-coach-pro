@@ -11,7 +11,8 @@ export function ProfileScreen({
   onTab,
   onDisconnect,
   onUpdateProfile,
-  onRestart
+  onRestart,
+  onRetakeSkillCheck
 }) {
   return <ScrollView contentContainerStyle={styles.page}>
     <View style={styles.pageIntro}><Badge tone="amber">YOUR SPACE</Badge>
@@ -23,7 +24,7 @@ export function ProfileScreen({
         }}><Text style={styles.cardTitle}>{username || 'Guest player'}</Text>
         <Text style={styles.bodyMuted}>{rating ? `Recent rating ${rating}` : 'Your progress is saved on this device.'}</Text></View></View>
       <SectionTitle eyebrow="CURRENT FOCUS" title={profile.goal || 'Improve tactics'} />
-      {['Improve tactics', 'Understand my games', 'Learn openings'].map(item => <Pressable key={item} onPress={() => onUpdateProfile({
+      {['Improve tactics', 'Understand my games', 'Learn openings', 'Learn from scratch'].map(item => <Pressable key={item} accessibilityRole="button" accessibilityLabel={`Set focus to ${item}`} onPress={() => onUpdateProfile({
         ...profile,
         goal: item
       })} style={[styles.setupChoice, profile.goal === item && styles.setupChoiceActive]}><Text style={styles.rowTitle}>{item}</Text></Pressable>)}
@@ -33,6 +34,7 @@ export function ProfileScreen({
         <Text style={styles.bodyMuted}>{username ? `Connected as ${username}. Only public game data is read.` : 'No account connected.'}</Text>
       {username ? <Button title="Disconnect account" secondary onPress={onDisconnect} /> : <Button title="Connect on Home" secondary onPress={() => onTab('home')} />}
       <Button title="Review your privacy & app setup" secondary onPress={() => onTab('setup')} />
+      <Button title="Retake skill check" secondary onPress={onRetakeSkillCheck} />
       <Button title="Change my starting preferences" secondary onPress={onRestart} />
     </View>
     <View style={styles.noticeCard}><Text style={styles.noticeIcon}>⌂</Text>

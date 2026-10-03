@@ -7,13 +7,16 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "postinstall": "node scripts/patch-stockfish.js"
+    "postinstall": "node scripts/patch-stockfish.js",
+    "test:scheduler": "node scripts/test-scheduler.mjs",
+    "validate:lessons": "node scripts/validate-lessons.js"
   },
   "dependencies": {
     "@loloof64/react-native-stockfish": "^0.3.3",
     "@react-native-async-storage/async-storage": "2.2.0",
     "chess.js": "1.4.0",
     "expo": "~57.0.0",
+    "expo-audio": "~57.0.5",
     "expo-dev-client": "^57.0.19",
     "react": "19.2.3",
     "react-native": "0.86.0",

@@ -1,85 +1,67 @@
 import { StyleSheet } from 'react-native';
 import { C, sharedStyles } from '../theme';
 
-const styles = { ...sharedStyles, ...StyleSheet.create({
-  scoreHero: {
-  backgroundColor: C.green,
-  borderRadius: 16,
-  padding: 17,
-  marginBottom: 13
-},
-  scoreLine: {
-  flexDirection: 'row',
-  alignItems: 'baseline',
-  marginTop: 6
-},
-  scoreBig: {
-  color: '#fff',
-  fontSize: 47,
-  fontWeight: '700',
-  letterSpacing: -2
-},
-  scoreOutOf: {
-  color: '#d4decf',
-  fontSize: 14,
-  marginLeft: 4
-},
-  scoreBrand: {
-  color: '#cfb071',
-  fontSize: 8,
-  fontWeight: '800',
-  letterSpacing: 1.1,
-  marginLeft: 'auto'
-},
-  scoreSummary: {
-  color: '#e2e8df',
-  fontSize: 12,
-  lineHeight: 18,
-  marginTop: 6
-},
-  phaseCard: {
-  backgroundColor: C.paper,
-  borderRadius: 13,
-  padding: 14,
-  marginBottom: 10,
-  borderWidth: 1,
-  borderColor: C.line
-},
-  phaseHead: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center'
-},
-  phaseTitle: {
-  color: C.ink,
-  fontWeight: '700',
-  fontSize: 14
-},
-  phaseScore: {
-  color: C.green,
-  fontWeight: '700',
-  fontSize: 16
-},
-  phaseOutOf: {
-  color: C.muted,
-  fontSize: 10,
-  fontWeight: '500'
-},
-  phaseBody: {
-  color: C.muted,
-  fontSize: 11,
-  lineHeight: 17,
-  marginTop: 8
-},
-  lesson: {
-  color: C.green,
-  fontSize: 11,
-  lineHeight: 16,
-  marginTop: 6
-},
-  loadingCard: {
-  alignItems: 'center',
-  paddingVertical: 20
-}
+export default { ...sharedStyles, ...StyleSheet.create({
+  statsCard: { backgroundColor: C.paper, borderRadius: 15, padding: 15, borderWidth: 1, borderColor: C.line, marginBottom: 12 },
+  accuracyRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13 },
+  accuracySide: { flex: 1, alignItems: 'center' },
+  accuracyValue: { color: C.green, fontSize: 29, fontWeight: '800', letterSpacing: -1 },
+  accuracyLabel: { color: C.muted, fontSize: 11, fontWeight: '700', marginTop: 2 },
+  accuracyDivider: { width: 1, height: 38, backgroundColor: C.line },
+  countRow: { borderTopWidth: 1, borderTopColor: C.line, paddingTop: 11, gap: 7 },
+  countItem: { flexDirection: 'row', alignItems: 'center', minHeight: 19 },
+  countDot: { width: 7, height: 7, borderRadius: 4, marginRight: 7 },
+  countText: { color: C.muted, fontSize: 10, flex: 1, textTransform: 'capitalize' },
+  countNumber: { color: C.ink, fontSize: 10, fontWeight: '700' },
+  countLegend: { color: C.faint, fontSize: 8, textAlign: 'right', marginTop: 3 },
+  graphWrap: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 14, padding: 12, marginBottom: 12, overflow: 'hidden' },
+  graphLabels: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  graphHint: { color: C.faint, fontSize: 9 },
+  graphAxis: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 3 },
+  boardCard: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 14, padding: 12, marginBottom: 12 },
+  boardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, gap: 8 },
+  boardTitle: { color: C.ink, fontWeight: '800', fontSize: 13 },
+  boardEval: { color: C.muted, fontSize: 10, flexShrink: 1, textAlign: 'right' },
+  stepRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
+  stepButton: { paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, backgroundColor: C.greenSoft },
+  stepText: { color: C.green, fontWeight: '700', fontSize: 10 },
+  plyText: { color: C.muted, fontSize: 10 },
+  bestMoveNote: { color: C.muted, fontSize: 10, textAlign: 'center', marginTop: 7 },
+  reviewLegend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 9, marginTop: 6, marginBottom: 5 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  legendDot: { width: 7, height: 7, borderRadius: 4 },
+  legendLabel: { color: C.muted, fontSize: 8, fontWeight: '700' },
+  movesCard: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 14, padding: 14, marginBottom: 18 },
+  sectionTitle: { color: C.ink, fontWeight: '800', fontSize: 15, letterSpacing: -0.2 },
+  moveGrid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 },
+  moveChip: { minWidth: '23%', flexDirection: 'row', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 5, borderRadius: 6 },
+  moveChipActive: { backgroundColor: C.greenSoft },
+  moveNumber: { color: C.faint, fontSize: 9, minWidth: 17 },
+  moveSan: { fontSize: 10, fontWeight: '700' },
+  criticalSection: { marginBottom: 18 },
+  sectionCopy: { color: C.muted, fontSize: 11, lineHeight: 16, marginTop: 4, marginBottom: 9 },
+  criticalCard: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 14, padding: 12, marginBottom: 9 },
+  criticalTop: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 11 },
+  miniBoard: { width: 76, height: 76, borderRadius: 5, overflow: 'hidden' },
+  criticalDetails: { flex: 1, alignItems: 'flex-start' },
+  criticalPlayed: { color: C.ink, fontSize: 11, fontWeight: '700', marginTop: 7 },
+  criticalBest: { color: C.green, fontSize: 11, marginTop: 2 },
+  criticalLoss: { color: C.red, fontSize: 10, fontWeight: '700', marginTop: 3 },
+  phaseTag: { color: C.faint, fontSize: 8, fontWeight: '800', letterSpacing: 0.7, marginTop: 5 },
+  noticeCard: { backgroundColor: '#f0f1eb', borderWidth: 1, borderColor: C.line, borderRadius: 11, padding: 12 },
+  noticeCopy: { color: C.muted, fontSize: 11, lineHeight: 16 },
+  progressTrack: { height: 6, backgroundColor: C.soft, borderRadius: 5, overflow: 'hidden', width: '100%', marginTop: 16 },
+  progressFill: { height: '100%', backgroundColor: C.green },
+  loadingCard: { alignItems: 'center', paddingVertical: 18 },
+  card: { backgroundColor: C.paper, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: C.line, marginBottom: 15 },
+  cardTitle: { color: C.ink, fontSize: 16, fontWeight: '700', marginTop: 12, textAlign: 'center' },
+  cardCopy: { color: C.muted, fontSize: 11, lineHeight: 16, marginTop: 8, marginBottom: 10, textAlign: 'center' },
+  coachCard: { backgroundColor: C.paper, borderRadius: 14, padding: 14, marginTop: 3, marginBottom: 14, borderWidth: 1, borderColor: C.line },
+  coachHead: { flexDirection: 'row', alignItems: 'center' },
+  coachTitle: { color: C.ink, fontSize: 14, fontWeight: '800' },
+  coachCopy: { color: C.muted, fontSize: 10, lineHeight: 15, marginTop: 4 },
+  coachMark: { color: C.amber, fontSize: 21, marginLeft: 8 },
+  coachSummary: { color: C.ink, fontSize: 12, lineHeight: 18, marginTop: 11 },
+  coachPhase: { color: C.muted, fontSize: 11, lineHeight: 17, marginTop: 8 },
+  errorText: { color: C.red, fontSize: 11, marginBottom: 9 },
 }) };
-export default styles;

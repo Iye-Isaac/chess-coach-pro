@@ -1,7 +1,30 @@
 import { StyleSheet } from 'react-native';
 import { C, sharedStyles } from '../theme';
 
-const styles = { ...sharedStyles, ...StyleSheet.create({
-
+export default { ...sharedStyles, ...StyleSheet.create({
+  trackRail: { flexDirection: 'row', padding: 4, backgroundColor: '#eaeae4', borderRadius: 11, marginBottom: 14 },
+  trackTab: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 9, borderRadius: 8 },
+  trackTabActive: { backgroundColor: C.paper, elevation: 1 },
+  trackTabText: { color: C.muted, fontSize: 9, fontWeight: '700' },
+  trackTabTextActive: { color: C.green },
+  progressCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.green, borderRadius: 14, padding: 15, marginBottom: 13 },
+  eyebrow: { color: '#c5d1bf', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  progressTitle: { color: '#fffdf6', fontSize: 20, fontWeight: '800', marginTop: 5 },
+  progressMark: { color: '#c8a767', fontSize: 34, marginHorizontal: 7 },
+  lessonNode: { flexDirection: 'row', alignItems: 'center', gap: 11, padding: 12, minHeight: 82, backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 13, marginBottom: 9 },
+  lessonNodeLocked: { opacity: 0.58 },
+  nodeMark: { width: 37, height: 37, borderRadius: 13, backgroundColor: C.amberSoft, alignItems: 'center', justifyContent: 'center' },
+  nodeMarkComplete: { backgroundColor: C.greenSoft },
+  nodeMarkLocked: { backgroundColor: C.soft },
+  nodeMarkText: { color: '#8b6324', fontSize: 10, fontWeight: '800' },
+  nodeMarkTextComplete: { color: C.green, fontSize: 17 },
+  nodeCopy: { flex: 1 },
+  nodeTitle: { color: C.ink, fontSize: 12, fontWeight: '800' },
+  nodeSummary: { color: C.muted, fontSize: 10, lineHeight: 14, marginTop: 3 },
+  nodeMeta: { color: C.faint, fontSize: 9, fontWeight: '700', marginTop: 5 },
+  emptyCard: { padding: 16, backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 14, marginBottom: 14 },
+  emptyTitle: { color: C.ink, fontSize: 14, fontWeight: '800' },
+  bodyMuted: { color: C.muted, fontSize: 11, lineHeight: 16, marginTop: 5 },
+  resourcesCard: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, backgroundColor: '#f0f1eb', borderRadius: 13, borderWidth: 1, borderColor: C.line, marginTop: 9 },
+  resourcesTitle: { color: C.ink, fontSize: 15, fontWeight: '800', marginTop: 4 },
 }) };
-export default styles;

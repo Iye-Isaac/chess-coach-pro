@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './PlayScreen.styles';
 import { C, PIECE_NAMES } from '../theme';
 import { getJSON, setJSON, STORAGE_KEYS } from '../storage/keys';
 import { Chess } from 'chess.js';
 import { Badge, Button, ChessBoard, SectionTitle } from '../components';
 import { hasNativeStockfish, useStockfishEngine } from '../engine/useStockfishEngine';
+import { markAnalysisEngineReady, markAnalysisEngineUnavailable, publishEngineOutput, registerAnalysisEngine, setCoachGameActive, withStockfishLock } from '../engine/analyzer';
 
 export function PlayScreen({
   playerRating,
+  startingRating,
+  coachPlanLaunch,
   playerKey,
   onSaveGame,
   onOpenHistory
@@ -34,7 +38,6 @@ export function PlayScreen({
     depth: 0,
     moves: {}
   });
-  const engineOutputBuffer = useRef('');
   const resultRecorded = useRef(false);
   const savedGameKey = useRef(null);
   const bestMoveResolver = useRef(null);
@@ -42,11 +45,14 @@ export function PlayScreen({
   const engineTimer = useRef(null);
   const engineApiRef = useRef(null);
   const storageKey = STORAGE_KEYS.adaptive(playerKey);
-  const baseRating = playerRating || 1400;
+  const baseRating = playerRating || startingRating || 1400;
   const requestedRating = Math.max(400, Math.min(3190, Math.round(baseRating + ratingAdjustment)));
   const targetRating = Math.max(1320, requestedRating);
   const requestedRatingRef = useRef(requestedRating);
   requestedRatingRef.current = requestedRating;
+  useEffect(() => {
+    if (coachPlanLaunch) { setMode('coach'); setGameStarted(false); setError(''); }
+  }, [coachPlanLaunch]);
   useEffect(() => {
     let active = true;
     AsyncStorage.getItem(storageKey).then(saved => {
@@ -64,6 +70,7 @@ export function PlayScreen({
     };
   }, [storageKey]);
   const handleEngineError = useCallback(message => {
+    markAnalysisEngineUnavailable();
     engineReady.current = false;
     setEngineStatus('Engine error');
     if (bestMoveResolver.current) {
@@ -73,13 +80,13 @@ export function PlayScreen({
     setError(message || 'Stockfish could not start.');
   }, []);
   const handleEngineOutput = useCallback(output => {
-    const chunks = `${engineOutputBuffer.current}${String(output || '')}`.split(/\r?\n/);
-    engineOutputBuffer.current = chunks.pop() || '';
-    const lines = chunks;
+    publishEngineOutput(output);
+    const lines = String(output || '').split(/\r?\n/).filter(line => line.trim());
     for (const line of lines) {
       if (line.includes('uciok')) engineApiRef.current?.sendCommandToStockfish('isready');
       if (line.includes('readyok')) {
         engineReady.current = true;
+        markAnalysisEngineReady();
         setEngineStatus('Stockfish ready');
       }
       const candidate = line.match(/\binfo depth (\d+).*?\bmultipv (\d+).*?\bpv ([a-h][1-8][a-h][1-8][qrbn]?)/);
@@ -108,19 +115,23 @@ export function PlayScreen({
     onError: handleEngineError
   });
   engineApiRef.current = engineApi;
+  useEffect(() => registerAnalysisEngine(engineApi), [engineApi.stockfishLoop, engineApi.stopStockfish, engineApi.sendCommandToStockfish]);
   useEffect(() => {
-    if (!hasNativeStockfish) return undefined;
+    if (!hasNativeStockfish) {
+      markAnalysisEngineUnavailable();
+      return undefined;
+    }
     try {
       engineApi.stockfishLoop();
       engineApi.sendCommandToStockfish('uci');
     } catch {
+      markAnalysisEngineUnavailable();
       setEngineStatus('Engine unavailable');
     }
     return () => {
       clearTimeout(engineTimer.current);
-      engineApi.stopStockfish();
     };
-  }, [engineApi.stockfishLoop, engineApi.sendCommandToStockfish, engineApi.stopStockfish]);
+  }, [engineApi.stockfishLoop, engineApi.sendCommandToStockfish]);
   const {
     width
   } = useWindowDimensions();
@@ -172,23 +183,22 @@ export function PlayScreen({
     setError('');
     try {
       if (!engineReady.current) throw new Error('Stockfish is still starting. Please wait for it to be ready.');
-      engineCandidates.current = {
-        depth: 0,
-        moves: {}
-      };
-      const multiPv = requestedRating < 1320 ? Math.min(5, 1 + Math.ceil((1320 - requestedRating) / 150)) : 1;
-      engineApi.sendCommandToStockfish(`setoption name MultiPV value ${multiPv}`);
-      engineApi.sendCommandToStockfish('setoption name UCI_LimitStrength value true');
-      engineApi.sendCommandToStockfish(`setoption name UCI_Elo value ${targetRating}`);
-      engineApi.sendCommandToStockfish(`position fen ${gameRef.current.fen()}`);
-      const move = await new Promise((resolve, reject) => {
-        bestMoveResolver.current = resolve;
-        engineTimer.current = setTimeout(() => {
-          bestMoveResolver.current = null;
-          engineApiRef.current?.sendCommandToStockfish('stop');
-          reject(new Error('Stockfish did not respond. Try again or return to game setup.'));
-        }, 12000);
-        engineApi.sendCommandToStockfish('go movetime 1200');
+      const move = await withStockfishLock(async () => {
+        engineCandidates.current = { depth: 0, moves: {} };
+        const multiPv = requestedRating < 1320 ? Math.min(5, 1 + Math.ceil((1320 - requestedRating) / 150)) : 1;
+        engineApi.sendCommandToStockfish(`setoption name MultiPV value ${multiPv}`);
+        engineApi.sendCommandToStockfish('setoption name UCI_LimitStrength value true');
+        engineApi.sendCommandToStockfish(`setoption name UCI_Elo value ${targetRating}`);
+        engineApi.sendCommandToStockfish(`position fen ${gameRef.current.fen()}`);
+        return new Promise((resolve, reject) => {
+          bestMoveResolver.current = resolve;
+          engineTimer.current = setTimeout(() => {
+            bestMoveResolver.current = null;
+            engineApiRef.current?.sendCommandToStockfish('stop');
+            reject(new Error('Stockfish did not respond. Try again or return to game setup.'));
+          }, 12000);
+          engineApi.sendCommandToStockfish('go movetime 1200');
+        });
       });
       if (!move) throw new Error('Stockfish did not return a move.');
       gameRef.current.move({
@@ -254,6 +264,10 @@ export function PlayScreen({
   };
   const checkmate = gameRef.current.isCheckmate();
   const gameOver = gameRef.current.isGameOver();
+  useEffect(() => {
+    setCoachGameActive(mode === 'coach' && gameStarted && !gameOver);
+    return () => setCoachGameActive(false);
+  }, [mode, gameStarted, gameOver]);
   const status = checkmate ? `${turn === 'w' ? 'Black' : 'White'} wins by checkmate.` : gameRef.current.isStalemate() ? 'Draw by stalemate.' : gameRef.current.isCheck() ? `${turn === 'w' ? 'White' : 'Black'} is in check.` : `${turn === 'w' ? 'White' : 'Black'} to move`;
   useEffect(() => {
     if (!gameStarted || !gameOver || savedGameKey.current === fen) return;
@@ -269,6 +283,7 @@ export function PlayScreen({
       end_time: stamp,
       pgn: gameRef.current.pgn(),
       mode,
+      playerColor: mode === 'coach' ? playerColor : null,
       resultLabel: mode === 'coach' ? draw ? 'draw' : playerColor === 'w' ? whiteResult : blackResult : status,
       opponentName: mode === 'coach' ? 'Adaptive Stockfish Coach' : 'Pass & play',
       time_class: 'local',
@@ -298,7 +313,7 @@ export function PlayScreen({
         <View style={styles.modeSwitch}>
         {['w', 'b'].map(color => <Pressable key={color} onPress={() => setPlayerColor(color)} style={[styles.modeOption, playerColor === color && styles.modeOptionActive]}><Text style={[styles.modeText, playerColor === color && styles.modeTextActive]}>{color === 'w' ? 'White' : 'Black'}</Text></Pressable>)}
       </View>
-        <Text style={styles.bodyMuted}>{playerColor === 'b' ? 'Stockfish will make the first move.' : 'You will make the first move.'}  ·  {playerRating ? `Chess.com rating ${playerRating}` : 'Starting target 1400'}</Text>
+        <Text style={styles.bodyMuted}>{playerColor === 'b' ? 'Stockfish will make the first move.' : 'You will make the first move.'}  ·  {playerRating ? `Chess.com rating ${playerRating}` : `Starting target ${startingRating || 1400}`}</Text>
       <View style={[styles.noticeCard, {
           marginTop: 12
         }]}><Text style={styles.noticeIcon}>{engineReady.current ? '✓' : '…'}</Text>
