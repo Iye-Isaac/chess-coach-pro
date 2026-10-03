@@ -27,6 +27,7 @@ This file summarizes the requests, decisions, and implementation milestones reco
   <https://expo.dev/accounts/iye_isaac/projects/chess-coach-pro/builds/527811d6-21d2-4d9f-ba88-b1838a919438>
 - Asked whether the project can continue under another Codex account. The repository can be opened from another account after connecting GitHub and granting it access to the private repository; chat history does not transfer with the source repository.
 - Asked to commit and push the updates and save this project chat history as a Markdown file.
+- Requested a skippable onboarding skill check with five timed offline puzzles, Elo-style rating, theme strengths and weaknesses, and a three-part lesson / puzzle / coach plan. Added a returning-user reminder and a Profile retake entry point; the selected coach estimate seeds the adaptive target while stored adjustment history remains intact.
 
 ## Project constraints
 
