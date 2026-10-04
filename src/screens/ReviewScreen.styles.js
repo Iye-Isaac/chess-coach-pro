@@ -1,30 +1,34 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   reviewSummary: {
   flexDirection: 'row',
   alignItems: 'center',
-  gap: 12,
-  padding: 13,
-  borderRadius: 12,
+  gap: S.md,
+  padding: S.md,
+  borderRadius: R.card,
   backgroundColor: C.amberSoft,
-  marginBottom: 15
+  marginBottom: S.lg
 },
   reviewSummaryValue: {
-  color: '#8b6324',
-  fontSize: 27,
-  fontWeight: '700'
+  color: C.muted,
+  fontSize: F.title,
+  fontWeight: W.semibold
 },
   reviewSummaryTitle: {
   color: C.ink,
-  fontSize: 12,
-  fontWeight: '700'
+  fontSize: F.secondary,
+  fontWeight: W.semibold
 },
   reviewSummarySub: {
   color: C.muted,
-  fontSize: 10,
-  marginTop: 3
+  fontSize: F.secondary,
+  marginTop: S.xs
 }
 }) };
-export default styles;
+
+
+var visualRules = StyleSheet.create({reviewSummary:{backgroundColor:C.bg,padding:M.zero,marginBottom:S.xl},reviewSummaryValue:{color:C.ink}});
+
+export default Object.fromEntries(Object.keys({ ...styles, ...visualRules }).map(key => [key, StyleSheet.flatten([styles[key], visualRules[key]])]));

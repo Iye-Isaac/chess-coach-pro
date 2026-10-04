@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, PanResponder, Pressable, ScrollView, Text, Vi
 import Svg, { Circle, Path } from 'react-native-svg';
 import { Chess } from 'chess.js';
 import styles from './GameReviewScreen.styles';
-import { C } from '../theme';
+import { C, S, R, F, W, T, M } from '../theme';
 import { Badge, Button, Empty, ChessBoard } from '../components';
 import { isCoachBackendConfigured, requestGameAnalysis } from '../services/coachApi';
 import { gameDate, opponentName } from '../services/chessCom';
@@ -12,7 +12,7 @@ import { getJSON, STORAGE_KEYS } from '../storage/keys';
 import { loadAutoSaveBlunders, saveMistakeMoments } from '../training/mistakes';
 import { savePendingAnalysis } from '../activity/store';
 
-const COLORS = { best: '#183b26', good: '#4f8a55', inaccuracy: '#e2bd36', mistake: '#ed8a26', blunder: '#cf4141' };
+const COLORS = { best: C.best, good: C.good, inaccuracy: C.inaccuracy, mistake: C.mistake, blunder: C.blunder };
 const LABELS = { best: 'Best', good: 'Good', inaccuracy: 'Inaccuracy', mistake: 'Mistake', blunder: 'Blunder' };
 const NOOP = () => {};
 
@@ -24,7 +24,7 @@ const ReviewMoveChip = memo(function ReviewMoveChip({ move, index, active, onSel
     style={[styles.moveChip, active && styles.moveChipActive]}
   >
     <Text style={styles.moveNumber}>{move.color === 'w' ? `${move.moveNumber}.` : ''}</Text>
-    <Text style={[styles.moveSan, { color: COLORS[move.classification] }]}>{move.san}</Text>
+    <Text style={[styles.moveSan, { color: C.ink }]}>{move.san}{({ best: ' ★', good: ' ✓', inaccuracy: ' ?!', mistake: ' ?', blunder: ' ??' })[move.classification]}</Text>
   </Pressable>;
 });
 
@@ -45,7 +45,7 @@ const CriticalMomentCard = memo(function CriticalMomentCard({ moment, orientatio
   const miniGame = useMemo(() => new Chess(moment.fenBefore), [moment.fenBefore]);
   return <View style={styles.criticalCard}>
     <View style={styles.criticalTop}><View style={styles.miniBoard}><ChessBoard game={miniGame} fen={moment.fenBefore} selected={null} legalMoves={[]} onSquare={NOOP} width={76} orientation={orientation} /></View>
-      <View style={styles.criticalDetails}><Badge tone={moment.classification === 'blunder' ? 'amber' : 'neutral'}>{LABELS[moment.classification]}</Badge><Text style={styles.criticalPlayed}>You played {moment.san}</Text><Text style={styles.criticalBest}>Best was {moment.bestSan}</Text><Text style={styles.criticalLoss}>{Math.round(moment.cpLoss)} cp · {Math.round(moment.winPctDrop)}% win chance lost</Text><Text style={styles.phaseTag}>{moment.phase.toUpperCase()} · MOVE {moment.moveNumber}</Text></View>
+      <View style={styles.criticalDetails}><Badge tone={moment.classification === 'blunder' ? 'amber' : 'neutral'}>{LABELS[moment.classification]}</Badge><Text style={styles.criticalPlayed}>You played {moment.san}</Text><Text style={styles.criticalBest}>Best was {moment.bestSan}</Text><Text style={styles.criticalLoss}>{Math.round(moment.cpLoss)} cp · {Math.round(moment.winPctDrop)}% win chance lost</Text><Text style={styles.phaseTag}>{moment.phase} · Move {moment.moveNumber}</Text></View>
     </View>
     <Button title={saved ? 'Saved to My mistakes' : 'Train this'} onPress={() => onSave(moment)} disabled={saved} secondary />
   </View>;
@@ -71,15 +71,15 @@ function EvalGraph({ analysis, currentPly, onSelect }) {
     onPanResponderMove: (event) => selectAt(event.nativeEvent.locationX),
   }), [width, evaluations.length]);
   return <View style={styles.graphWrap} onLayout={(event) => setWidth(event.nativeEvent.layout.width)} {...responder.panHandlers} accessibilityRole="adjustable" accessibilityLabel="Evaluation graph. Drag to move through the game.">
-    <View style={styles.graphLabels}><Text style={styles.eyebrow}>WHITE ADVANTAGE</Text><Text style={styles.graphHint}>Drag to explore</Text></View>
+    <View style={styles.graphLabels}><Text style={styles.eyebrow}>White advantage</Text><Text style={styles.graphHint}>Drag to explore</Text></View>
     <Svg width={width} height={height}>
-      <Path d={`M 0 ${height / 2} L ${width} ${height / 2}`} stroke="#d9ddd3" strokeWidth="1" strokeDasharray="4 4" />
-      {area ? <Path d={area} fill="#dfe9dc" opacity="0.8" /> : null}
+      <Path d={`M 0 ${height / 2} L ${width} ${height / 2}`} stroke={C.paper} strokeWidth="1" strokeDasharray="4 4" />
+      {area ? <Path d={area} fill={C.greenSoft} opacity="0.8" /> : null}
       {line ? <Path d={line} fill="none" stroke={C.green} strokeWidth="2.5" /> : null}
       {(analysis.criticalMoments || []).map((move) => {
         const x = (move.ply / Math.max(evaluations.length - 1, 1)) * width;
         const y = points[move.ply - 1]?.y ?? height / 2;
-        return <Circle key={move.ply} cx={x} cy={y} r="4" fill={C.amber} stroke="#fff" strokeWidth="1.5" />;
+        return <Circle key={move.ply} cx={x} cy={y} r="4" fill={C.amber} stroke={C.white} strokeWidth="1.5" />;
       })}
       <Path d={`M ${activeX} 0 L ${activeX} ${height}`} stroke={C.red} strokeWidth="1.5" opacity="0.8" />
     </Svg>
@@ -221,14 +221,14 @@ export function GameReviewScreen({ game, username, onBack }) {
   return <ScrollView contentContainerStyle={styles.page}>
     <Pressable accessibilityRole="button" accessibilityLabel="Back to game list" onPress={onBack} style={styles.backButton}><Text style={styles.backText}>‹  All games</Text></Pressable>
     <View style={styles.pageIntro}>
-      <Badge tone="amber">GAME REVIEW</Badge>
+      <Badge tone="amber">Game review</Badge>
       <Text style={styles.pageTitle}>A game is a lesson.</Text>
       <Text style={styles.pageSubtitle}>vs. {opponentName(game, username)}  ·  {gameDate(game.end_time || Math.floor((game.date || Date.now()) / 1000))}  ·  {game.time_class || 'chess'}</Text>
     </View>
 
     {analysis ? <>
       <View style={styles.statsCard}>
-        <Text style={styles.eyebrow}>ACCURACY</Text>
+        <Text style={styles.eyebrow}>Accuracy</Text>
         <View style={styles.accuracyRow}>
           <View style={styles.accuracySide}><Text style={styles.accuracyValue}>{Math.round(analysis.white.accuracy)}%</Text><Text style={styles.accuracyLabel}>White</Text></View>
           <View style={styles.accuracyDivider} />
