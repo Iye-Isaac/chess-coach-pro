@@ -7,12 +7,13 @@ import { STORAGE_KEYS, getJSON, setJSON } from '../storage/keys';
 import { Badge, Button, ChessBoard } from '../components';
 import { initialPuzzleRating, moveToUci, pickPuzzleSession, puzzlesForTheme, PUZZLE_THEMES, ratingAfterPuzzle, themeLabel, uciToMove } from '../puzzles/catalog';
 import { MistakeDrill } from '../training/MistakeDrill';
+import { recordActivity } from '../activity/store';
 
 const SESSION_LENGTH = 5;
 const OPPONENT_MOVE_DELAY = 450;
 
-export function TrainScreen({ onTab, profile, initialTheme }) {
-  const [section, setSection] = useState('puzzles');
+export function TrainScreen({ onTab, profile, initialTheme, initialSection, initialMistakeIds }) {
+  const [section, setSection] = useState(initialSection || 'puzzles');
   const [learnedCount, setLearnedCount] = useState(0);
   const [history, setHistory] = useState([]);
   const [puzzleRating, setPuzzleRating] = useState(800);
@@ -170,6 +171,10 @@ export function TrainScreen({ onTab, profile, initialTheme }) {
     const nextResults = [...sessionResultsRef.current, result];
     sessionResultsRef.current = nextResults;
     setSessionResults(nextResults);
+    recordActivity('puzzle', `${puzzle.id}-${result.ts}`, { theme: sessionTheme }).then(() => {
+      if (nextResults.length === SESSION_LENGTH) return recordActivity('session', `${nextResults[0].id}-${nextResults[0].ts}`, { theme: sessionTheme });
+      return null;
+    }).catch(() => setNotice('Your puzzle is complete, but today’s activity could not be saved.'));
     const nextRating = ratingAfterPuzzle(ratingRef.current, puzzle.rating, passed);
     ratingRef.current = nextRating;
     setPuzzleRating(nextRating);
@@ -377,7 +382,7 @@ export function TrainScreen({ onTab, profile, initialTheme }) {
           ))}
         </View>
       ) : section === 'mistakes' ? (
-        <MistakeDrill onTab={onTab} />
+        <MistakeDrill onTab={onTab} initialIds={initialMistakeIds} />
       ) : section === 'openings' ? (
         <View style={styles.card}>
           <Text style={styles.eyebrow}>OPENING PRACTICE</Text>

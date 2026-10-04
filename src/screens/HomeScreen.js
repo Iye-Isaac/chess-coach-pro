@@ -1,97 +1,110 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 import styles from './HomeScreen.styles';
-import { C, PIECE_NAMES } from '../theme';
-import { Badge, Button, SectionTitle, GameRow } from '../components';
-import { gameDate } from '../services/chessCom';
+import { C } from '../theme';
+import { Badge, Button } from '../components';
+import { themeLabel } from '../puzzles/catalog';
 import { getJSON, setJSON, STORAGE_KEYS } from '../storage/keys';
+import { useToday } from '../activity/useToday';
+import { ChessComCard } from '../components/ChessComCard';
 
-export function HomeScreen({
-  username,
-  games,
-  onConnect,
-  onRefresh,
-  syncing,
-  syncError,
-  onOpenReview,
-  onTab,
-  profile,
-  onStartSkillCheck
-}) {
-  const [input, setInput] = useState(username || '');
-  const [skillCheckDismissed, setSkillCheckDismissed] = useState(false);
-  useEffect(() => { getJSON(STORAGE_KEYS.skillCheckPromptDismissed, false).then(setSkillCheckDismissed); }, []);
+function ProgressRing({ completed, total }) {
+  const circumference = 2 * Math.PI * 30;
+  return <View style={styles.ring} accessibilityLabel={`${completed} of ${total} daily tasks complete`}>
+    <Svg width={76} height={76}>
+      <Circle cx={38} cy={38} r={30} stroke={C.line} strokeWidth={7} fill="none" />
+      <Circle cx={38} cy={38} r={30} stroke={C.green} strokeWidth={7} fill="none"
+        strokeDasharray={`${circumference} ${circumference}`}
+        strokeDashoffset={circumference * (1 - completed / Math.max(1, total))}
+        strokeLinecap="round" rotation={-90} origin="38, 38" />
+    </Svg>
+    <Text style={styles.ringValue}>{completed}/{total}</Text>
+  </View>;
+}
+
+export function HomeScreen({ username, games, onConnect, onRefresh, syncing, syncError, onOpenReview, onTab, profile, onStartSkillCheck, onPractice }) {
+  const { snapshot, error, refresh } = useToday();
+  const [dismissed, setDismissed] = useState(true);
   useEffect(() => {
-    setInput(username || '');
-  }, [username]);
+    let active = true;
+    getJSON(STORAGE_KEYS.skillCheckPromptDismissed, false).then((value) => { if (active) setDismissed(value); });
+    return () => { active = false; };
+  }, []);
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const plan = snapshot?.plan;
+  const reviewed = new Set((snapshot?.events || []).filter((event) => event.type === 'mistake').map((event) => event.id));
+  const puzzlesDone = (snapshot?.events || []).filter((event) => event.type === 'puzzle' && event.theme === plan?.theme).length;
+  const rows = plan ? [
+    ...(plan.lessonId ? [{ id: 'lesson', title: plan.lessonTitle, detail: 'Your next lesson', target: { kind: 'lesson', lessonId: plan.lessonId } }] : []),
+    { id: 'puzzles', title: `5 ${themeLabel(plan.theme)} puzzles`, detail: `${Math.min(5, puzzlesDone)} / 5 practiced`, target: { kind: 'theme', theme: plan.theme } },
+    ...(plan.mistakeIds.length ? [{ id: 'mistakes', title: `Review ${plan.mistakeIds.length} saved ${plan.mistakeIds.length === 1 ? 'mistake' : 'mistakes'}`, detail: `${plan.mistakeIds.filter((id) => reviewed.has(id)).length} / ${plan.mistakeIds.length} reviewed`, target: { kind: 'mistakes', ids: plan.mistakeIds } }] : []),
+    { id: 'coach', title: 'One game against the coach', detail: 'Optional · bonus', target: { kind: 'coach' } },
+  ] : [];
   return <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
-    <View style={styles.hero}>
-      <View style={styles.heroTop}><Badge tone="amber">YOUR PERSONAL CHESS COACH</Badge>
-        <Text style={styles.heroCrown}>♛</Text></View>
-      <Text style={styles.heroTitle}>Play with{`\n`}more purpose.</Text>
-      <Text style={styles.heroSub}>A little reflection. A clearer plan. A stronger next game.</Text>
-      <View style={styles.heroRule} />
-      <Text style={styles.heroFoot}>A better player is built one thoughtful move at a time.</Text>
-    </View>
-
-    {profile && !profile.diagnosticDone && !skillCheckDismissed && <View style={styles.card}>
-      <Text style={styles.cardTitle}>Take the 2-minute skill check</Text>
-      <Text style={styles.cardCopy}>Five quick puzzles help us choose a helpful place to start. It works offline.</Text>
-      <Button title="Start skill check  →" onPress={onStartSkillCheck} />
-      <Pressable accessibilityRole="button" accessibilityLabel="Dismiss skill check reminder" onPress={() => { setSkillCheckDismissed(true); setJSON(STORAGE_KEYS.skillCheckPromptDismissed, true); }} style={{ alignSelf: 'center', padding: 8 }}><Text style={styles.linkText}>Maybe later</Text></Pressable>
-    </View>}
-
-    {!username ? <View style={styles.card}>
-      <View style={styles.cardTop}><View style={styles.cardIcon}><Text style={styles.cardIconText}>♟</Text></View>
-        <Badge>STEP 01</Badge></View>
-      <Text style={styles.cardTitle}>Start with your games</Text>
-      <Text style={styles.cardCopy}>Connect your Chess.com username to bring in your recent games and shape a training plan around your play.</Text>
-      <Text style={styles.inputLabel}>CHESS.COM USERNAME</Text>
-      <TextInput value={input} onChangeText={setInput} autoCapitalize="none" autoCorrect={false} placeholder="Your username" placeholderTextColor="#a7a99f" returnKeyType="go" onSubmitEditing={() => {
-        Keyboard.dismiss();
-        onConnect(input);
-      }} style={styles.input} />
-      {!!syncError && <Text style={styles.errorText}>{syncError}</Text>}
-      <Button title="Connect account  →" onPress={() => {
-        Keyboard.dismiss();
-        onConnect(input);
-      }} busy={syncing} />
-      <Text style={styles.privacyNote}>Chess.com public games only · No password needed</Text>
-    </View> : <View style={styles.card}>
-      <View style={styles.cardTop}><View style={styles.cardIcon}><Text style={styles.cardIconText}>✓</Text></View>
-        <Badge>CONNECTED</Badge></View>
-      <Text style={styles.cardTitle}>Welcome back, {username}</Text>
-      <Text style={styles.cardCopy}>Your recent Chess.com games are ready. Your game data stays on this device.</Text>
-      <View style={styles.statsStrip}>
-        <View style={styles.stat}><Text style={styles.statValue}>{games.length}</Text>
-        <Text style={styles.statLabel}>GAMES SYNCED</Text></View>
-        <View style={styles.statDivider} />
-        <View style={styles.stat}><Text style={styles.statValue}>30</Text>
-        <Text style={styles.statLabel}>DAYS REVIEWED</Text></View>
+    <View style={styles.greetingRow}>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.eyebrow}>{greeting.toUpperCase()}{username ? `, ${username.toUpperCase()}` : ''}</Text>
+        <Text style={styles.pageTitle}>Today</Text>
+        <Text style={styles.bodyMuted}>{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</Text>
       </View>
-      <Button title="Refresh my games" onPress={() => onRefresh(username)} secondary busy={syncing} />
-      {!!syncError && <Text style={styles.errorText}>{syncError}</Text>}
-    </View>}
-
-    <SectionTitle eyebrow="YOUR NEXT STEP" title="Build your training habit" />
-    <View style={styles.focusCard}><View style={styles.focusIcon}><Text style={styles.focusIconText}>✦</Text></View>
-        <View style={{
-        flex: 1
-      }}><Text style={styles.focusTitle}>Make time for one puzzle</Text>
-        <Text style={styles.focusCopy}>A few focused minutes can change how you see the board.</Text></View>
-        <Pressable onPress={() => onTab('train')} style={styles.roundArrow}><Text style={styles.roundArrowText}>→</Text></Pressable></View>
-
-    <View style={styles.quickGrid}>
-      {[['progress', '◷', 'Progress', 'Recent results'], ['history', '♟', 'Game history', 'Return to a game'], ['learning', '✦', 'Learning path', 'Your weekly plan'], ['profile', '⚙', 'Profile & settings', 'Preferences & privacy']].map(([tab, icon, title, note]) => <Pressable key={tab} onPress={() => onTab(tab)} style={({
-        pressed
-      }) => [styles.quickCard, pressed && styles.pressed]}><Text style={styles.quickIcon}>{icon}</Text>
-        <Text style={styles.quickTitle}>{title}</Text>
-        <Text style={styles.quickNote}>{note}</Text></Pressable>)}
+      <View style={styles.streak} accessibilityLabel={`Current streak ${snapshot?.streak.current || 0} days`}>
+        <Text style={styles.flame}>🔥</Text>
+        <Text style={styles.streakValue}>{snapshot?.streak.current || 0}</Text>
+        <Text style={styles.streakLabel}>DAY STREAK</Text>
+      </View>
     </View>
-
-    <View style={styles.sectionHead}><View><Text style={styles.eyebrow}>FROM YOUR CHESS.COM ACCOUNT</Text>
-        <Text style={styles.sectionTitle}>Recent games</Text></View>{games.length > 0 && <Pressable onPress={() => onTab('review')}><Text style={styles.linkText}>See all  →</Text></Pressable>}</View>
-    {games.length ? games.slice(0, 3).map(game => <GameRow key={game.url || `${game.end_time}-${gameDate(game.end_time)}`} game={game} username={username} onPress={() => onOpenReview(game)} />) : <View style={styles.smallEmpty}><Text style={styles.smallEmptyText}>Connect your Chess.com account to see your games here.</Text></View>}
+    {snapshot && <View style={styles.weekRow}>
+      {snapshot.week.map((day) => <View key={day.date} style={styles.weekDay} accessibilityLabel={`${day.date}: ${day.active ? 'practice complete' : 'no completed practice'}`}>
+        <Text style={[styles.weekLabel, day.today && { color: C.green, fontWeight: '800' }]}>{day.label}</Text>
+        <View style={[styles.weekDot, day.active && styles.weekDotFilled, day.today && styles.weekDotToday]} />
+      </View>)}
+      <Text style={styles.longest}>Best{`\n`}{snapshot.streak.longest} days</Text>
+    </View>}
+    <View style={styles.card}>
+      <View style={styles.planHeading}>
+        <View style={{ flex: 1 }}><Badge tone="amber">YOUR DAILY PLAN</Badge>
+          <Text style={styles.cardTitle}>{snapshot?.progress.complete ? 'A good day of chess.' : 'One thoughtful step at a time.'}</Text>
+          <Text style={styles.cardCopy}>{snapshot?.progress.complete ? 'Today’s practice is complete. Come back tomorrow for your next plan.' : 'Your practice is ready. Everything here works offline.'}</Text>
+        </View>
+        {snapshot && <ProgressRing {...snapshot.progress} />}
+      </View>
+      {!snapshot && !error && <ActivityIndicator color={C.green} accessibilityLabel="Loading today’s plan" />}
+      {!!error && <><Text style={styles.errorText}>{error}</Text><Button title="Try again" onPress={refresh} secondary /></>}
+      {rows.map((row) => {
+        const done = plan.completed.includes(row.id);
+        return <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`${row.title}, ${done ? 'complete' : row.detail}`}
+          onPress={() => onPractice(row.target)} style={({ pressed }) => [styles.planRow, pressed && styles.pressed]}>
+          <View style={[styles.check, done && styles.checkDone]}><Text style={done ? styles.checkDoneText : styles.checkText}>{done ? '✓' : row.id === 'coach' ? '+' : '○'}</Text></View>
+          <View style={{ flex: 1 }}><Text style={styles.rowTitle}>{row.title}</Text><Text style={styles.rowDetail}>{done ? 'Done today' : row.detail}</Text></View>
+          <Text style={styles.arrow}>›</Text>
+        </Pressable>;
+      })}
+    </View>
+    {(snapshot?.resumeLesson || snapshot?.pendingAnalysis) && <View style={styles.card}>
+      <Badge>CONTINUE</Badge><Text style={styles.cardTitle}>Pick up where you left off</Text>
+      {snapshot.resumeLesson && <Button title={`Resume ${snapshot.resumeLesson.title}`} onPress={() => onPractice({ kind: 'lesson', lessonId: snapshot.resumeLesson.id })} />}
+      {snapshot.pendingAnalysis?.game && <Button title="Continue game analysis" secondary onPress={() => onOpenReview(snapshot.pendingAnalysis.game)} />}
+    </View>}
+    {snapshot && <View style={styles.spotlight}>
+      <Badge tone="amber">WEAKNESS SPOTLIGHT</Badge>
+      <Text style={styles.cardTitle}>{themeLabel(snapshot.weakestTheme)}</Text>
+      <Text style={styles.cardCopy}>A useful idea to practice, based on your missed puzzles and skill check.</Text>
+      <Button title="Practice it  →" onPress={() => onPractice({ kind: 'theme', theme: snapshot.weakestTheme })} />
+    </View>}
+    {profile && !profile.diagnosticDone && !dismissed && <View style={styles.card}>
+      <Text style={styles.cardTitle}>Take the 2-minute skill check</Text>
+      <Text style={styles.cardCopy}>Five quick puzzles help choose your starting point.</Text>
+      <Button title="Start skill check  →" onPress={onStartSkillCheck} />
+      <Button title="Maybe later" secondary onPress={() => { setDismissed(true); setJSON(STORAGE_KEYS.skillCheckPromptDismissed, true); }} />
+    </View>}
+    <View style={styles.quickGrid}>
+      {[['learning', 'Learning path'], ['history', 'Game history'], ['progress', 'Progress'], ['profile', 'Profile & reminders']].map(([tab, title]) => (
+        <Pressable key={tab} accessibilityRole="button" accessibilityLabel={`Open ${title}`} onPress={() => onTab(tab)} style={styles.quickCard}><Text style={styles.quickTitle}>{title}  ›</Text></Pressable>
+      ))}
+    </View>
+    <ChessComCard username={username} games={games} onConnect={onConnect} onRefresh={onRefresh} syncing={syncing} syncError={syncError} />
     <View style={styles.bottomSpace} />
   </ScrollView>;
 }

@@ -57,7 +57,7 @@ export function OnboardingScreen({ onFinish, profile = {}, initialStep = 'welcom
       <Pressable accessibilityRole="button" accessibilityLabel={`Practice ${themeLabel(themeSummary.weak)} puzzles`} onPress={() => finish({ kind: 'theme', theme: themeSummary.weak })} style={choiceStyle(false)}><Text style={styles.rowTitle}>2. Practice {themeLabel(themeSummary.weak)}</Text><Text style={styles.bodyMuted}>Your best theme to work on first.</Text></Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={`Play coach at ${coachStrength} strength`} onPress={() => finish({ kind: 'coach' })} style={choiceStyle(false)}><Text style={styles.rowTitle}>3. Play the coach · {coachStrength}</Text><Text style={styles.bodyMuted}>Recommended bot strength based on your estimate.</Text></Pressable>
       <Button title="Start my plan  →" onPress={() => finish(null)} />
-      {onCancel && <Button title="Back to Home" secondary onPress={() => finish(null)} />}
+      {onCancel && <Button title="Back to Today" secondary onPress={() => finish(null)} />}
     </View>}
     {skipTo[step] && <Pressable accessibilityRole="button" accessibilityLabel="Skip this onboarding step" onPress={() => setStep(skipTo[step])} style={{ alignSelf: 'center', padding: 12 }}><Text style={{ color: C.muted, textDecorationLine: 'underline' }}>Skip this step</Text></Pressable>}
   </ScrollView>;

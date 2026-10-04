@@ -28,6 +28,8 @@ This file summarizes the requests, decisions, and implementation milestones reco
 - Asked whether the project can continue under another Codex account. The repository can be opened from another account after connecting GitHub and granting it access to the private repository; chat history does not transfer with the source repository.
 - Asked to commit and push the updates and save this project chat history as a Markdown file.
 - Requested a skippable onboarding skill check with five timed offline puzzles, Elo-style rating, theme strengths and weaknesses, and a three-part lesson / puzzle / coach plan. Added a returning-user reminder and a Profile retake entry point; the selected coach estimate seeds the adaptive target while stored adjustment history remains intact.
+- Requested Today as the default tab: stable daily lesson/theme/mistake targets, bonus coach games, progress ring, week strip, streaks, resume cards, and a secondary Chess.com connection. Added local activity logging and approved expo-notifications for opt-in reminders after a completed plan item. Reminders use a rolling 60-day schedule refreshed on app foreground, date changes, and practice activity; today's notification is canceled when the required plan is done. The Android bundle, calendar/DST, plan, scheduler, and lesson checks passed; native notification delivery still requires a phone test.
+- Requested a premium mobile UI and UX exploration with Product Design and Mobbin competitor references. Mobbin searches returned a paid-plan requirement; the design exploration awaits a choice to enable Mobbin access or use public competitor sources.
 
 ## Project constraints
 

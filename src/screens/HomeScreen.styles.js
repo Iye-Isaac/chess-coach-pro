@@ -1,49 +1,31 @@
 import { StyleSheet } from 'react-native';
 import { C, sharedStyles } from '../theme';
-import extraStyles from './HomeScreen.extra.styles';
 
-const styles = { ...sharedStyles, ...StyleSheet.create({
-  heroTop: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between'
-},
-  heroCrown: {
-  color: '#d8b671',
-  fontSize: 40,
-  position: 'absolute',
-  right: 7,
-  top: 24,
-  opacity: 0.45
-},
-  heroRule: {
-  height: 1,
-  backgroundColor: '#ffffff27',
-  marginTop: 17,
-  marginBottom: 10
-},
-  heroFoot: {
-  color: '#b9c8b3',
-  fontSize: 10,
-  letterSpacing: 0.15
-},
-  cardTop: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between'
-},
-  cardIcon: {
-  width: 37,
-  height: 37,
-  borderRadius: 12,
-  backgroundColor: C.amberSoft,
-  alignItems: 'center',
-  justifyContent: 'center'
-},
-  cardIconText: {
-  color: '#94651b',
-  fontWeight: '800',
-  fontSize: 19
-}
-}), ...extraStyles };
-export default styles;
+export default { ...sharedStyles, ...StyleSheet.create({
+  greetingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 18, marginTop: 8, gap: 12 },
+  streak: { alignItems: 'center', minWidth: 74 },
+  flame: { fontSize: 24 },
+  streakValue: { fontSize: 27, fontWeight: '800', color: C.green },
+  streakLabel: { fontSize: 8, fontWeight: '800', color: C.muted, letterSpacing: 1 },
+  weekRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 10, marginBottom: 22 },
+  weekDay: { flex: 1, alignItems: 'center', gap: 8 },
+  weekLabel: { color: C.muted, fontSize: 11 },
+  weekDot: { width: 14, height: 14, borderRadius: 7, backgroundColor: C.soft, borderWidth: 1, borderColor: C.line },
+  weekDotFilled: { backgroundColor: C.green, borderColor: C.green },
+  weekDotToday: { borderWidth: 2, borderColor: C.amber },
+  longest: { fontSize: 10, color: C.muted, textAlign: 'center' },
+  planHeading: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 5 },
+  ring: { width: 76, height: 76, alignItems: 'center', justifyContent: 'center' },
+  ringValue: { position: 'absolute', fontSize: 17, fontWeight: '800', color: C.green },
+  planRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15, borderTopWidth: 1, borderTopColor: C.line, minHeight: 65 },
+  check: { width: 29, height: 29, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: C.soft },
+  checkDone: { backgroundColor: C.green },
+  checkDoneText: { color: C.white, fontWeight: '800', fontSize: 15 },
+  checkText: { color: C.muted, fontWeight: '700', fontSize: 18 },
+  rowDetail: { color: C.muted, fontSize: 11, marginTop: 4 },
+  arrow: { color: C.green, fontSize: 23 },
+  spotlight: { backgroundColor: C.amberSoft, borderRadius: 15, padding: 20, marginBottom: 16 },
+  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
+  quickCard: { flexBasis: '47%', flexGrow: 1, padding: 16, minHeight: 54, backgroundColor: C.paper, borderRadius: 12, borderWidth: 1, borderColor: C.line },
+  quickTitle: { color: C.green, fontWeight: '700', fontSize: 12 },
+}) };

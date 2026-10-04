@@ -10,6 +10,7 @@ import { gameDate, opponentName } from '../services/chessCom';
 import { ANALYSIS_CONFIG, analyzeGame } from '../engine/analyzer';
 import { getJSON, STORAGE_KEYS } from '../storage/keys';
 import { loadAutoSaveBlunders, saveMistakeMoments } from '../training/mistakes';
+import { savePendingAnalysis } from '../activity/store';
 
 const COLORS = { best: '#183b26', good: '#4f8a55', inaccuracy: '#e2bd36', mistake: '#ed8a26', blunder: '#cf4141' };
 const LABELS = { best: 'Best', good: 'Good', inaccuracy: 'Inaccuracy', mistake: 'Mistake', blunder: 'Blunder' };
@@ -112,11 +113,13 @@ export function GameReviewScreen({ game, username, onBack }) {
       if (saved?.moves) {
         setAnalysis(saved);
         setProgress(null);
+        await savePendingAnalysis(null, gameId);
         return;
       }
       setProgress({ current: 0, total: 1, message: 'Preparing game…' });
+      await savePendingAnalysis({ gameId, game, ts: Date.now() });
       const result = await analyzeGame({ game, username, signal: abortController.signal, onProgress: setProgress });
-      if (!abortController.signal.aborted) setAnalysis(result);
+      if (!abortController.signal.aborted) { setAnalysis(result); await savePendingAnalysis(null, gameId); }
     } catch (err) {
       if (err.name !== 'AbortError') setError(err.message || 'On-device analysis could not be completed.');
     } finally {

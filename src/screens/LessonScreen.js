@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import styles from './LessonScreen.styles';
 import lessonsData from '../data/lessons.json';
 import { Badge, Button, Empty, LessonPlayer } from '../components';
 import { getJSON, setJSON, STORAGE_KEYS } from '../storage/keys';
+import { readToday, recordActivity } from '../activity/store';
 
 export function LessonScreen({ lessonId, onBack, onNextLesson }) {
   const lesson = lessonsData.lessons.find((item) => item.id === lessonId);
@@ -39,6 +40,7 @@ export function LessonScreen({ lessonId, onBack, onNextLesson }) {
   if (!lesson) return <View style={styles.page}><Empty mark="♘" title="Lesson not found" detail="This lesson may have moved in the catalog." /><Button title="Back to learning" onPress={onBack} /></View>;
 
   const finishLesson = async () => {
+    await readToday();
     const saved = await getJSON(STORAGE_KEYS.lessons, {});
     const prior = saved?.[lesson.id] || {};
     const completedAt = Date.now();
@@ -53,6 +55,8 @@ export function LessonScreen({ lessonId, onBack, onNextLesson }) {
       },
     };
     await setJSON(STORAGE_KEYS.lessons, next);
+    try { await recordActivity('lesson', lesson.id); }
+    catch { Alert.alert('Practice log', 'Your lesson is complete, but today’s activity could not be saved.'); }
     setCompleted(true);
   };
 

@@ -3,6 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import styles from './ProfileScreen.styles';
 import { C, PIECE_NAMES } from '../theme';
 import { Badge, Button, SectionTitle } from '../components';
+import { ReminderSettings } from '../reminders/ReminderSettings';
 
 export function ProfileScreen({
   username,
@@ -32,11 +33,12 @@ export function ProfileScreen({
         marginTop: 18
       }]}>CHESS.COM CONNECTION</Text>
         <Text style={styles.bodyMuted}>{username ? `Connected as ${username}. Only public game data is read.` : 'No account connected.'}</Text>
-      {username ? <Button title="Disconnect account" secondary onPress={onDisconnect} /> : <Button title="Connect on Home" secondary onPress={() => onTab('home')} />}
+      {username ? <Button title="Disconnect account" secondary onPress={onDisconnect} /> : <Button title="Connect on Today" secondary onPress={() => onTab('home')} />}
       <Button title="Review your privacy & app setup" secondary onPress={() => onTab('setup')} />
       <Button title="Retake skill check" secondary onPress={onRetakeSkillCheck} />
       <Button title="Change my starting preferences" secondary onPress={onRestart} />
     </View>
+    <ReminderSettings />
     <View style={styles.noticeCard}><Text style={styles.noticeIcon}>⌂</Text>
         <View style={{
         flex: 1

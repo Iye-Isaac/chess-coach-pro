@@ -19,8 +19,9 @@ import { LessonScreen } from './src/screens/LessonScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { fetchRecentGames, recentPlayerRating } from './src/services/chessCom';
 import { isCoachBackendConfigured } from './src/services/coachApi';
+import { ReminderObserver } from './src/reminders/ReminderObserver';
 const TABS = [
-  { id: 'home', mark: '⌂', label: 'Home' },
+  { id: 'home', mark: '⌂', label: 'Today' },
   { id: 'review', mark: '◉', label: 'Review' },
   { id: 'train', mark: '♟', label: 'Train' },
   { id: 'play', mark: '♜', label: 'Play' },
@@ -44,6 +45,8 @@ function App() {
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [skillCheckOpen, setSkillCheckOpen] = useState(false);
   const [planTheme, setPlanTheme] = useState(null);
+  const [planSection, setPlanSection] = useState(null);
+  const [planMistakeIds, setPlanMistakeIds] = useState(null);
   const [planTrack, setPlanTrack] = useState(null);
   const [planCoachLaunch, setPlanCoachLaunch] = useState(0);
   const [trainLaunch, setTrainLaunch] = useState(0);
@@ -99,8 +102,20 @@ function App() {
     setSelectedGame(game);
     setTab('game');
   };
+  const navigateTab = next => {
+    setPlanTheme(null); setPlanSection(null); setPlanMistakeIds(null);
+    setTab(next);
+  };
+  const openPractice = target => {
+    if (target.kind === 'lesson') { setSelectedLesson(target.lessonId); setTab('lesson'); }
+    else if (target.kind === 'theme' || target.kind === 'mistakes') {
+      setPlanTheme(target.theme || null); setPlanSection(target.kind === 'mistakes' ? 'mistakes' : 'puzzles');
+      setPlanMistakeIds(target.ids || null); setTrainLaunch(value => value + 1); setTab('train');
+    } else if (target.kind === 'coach') { setPlanCoachLaunch(value => value + 1); setTab('play'); }
+  };
   const finishOnboarding = async (next, intent = null) => {
     const merged = { ...profile, ...next };
+    await Promise.all([AsyncStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(merged)), AsyncStorage.setItem(STORAGE_KEYS.puzzleRating, String(merged.puzzleRating)), AsyncStorage.setItem(STORAGE_KEYS.onboardingDone, 'yes')]);
     setProfile(merged);
     setOnboardingDone(true);
     setSkillCheckOpen(false);
@@ -111,7 +126,6 @@ function App() {
     else if (intent?.kind === 'track') { setTab('train'); }
     else if (intent?.kind === 'coach') { setPlanCoachLaunch((value) => value + 1); setTab('play'); }
     else setTab('home');
-    await Promise.all([AsyncStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(merged)), AsyncStorage.setItem(STORAGE_KEYS.puzzleRating, String(merged.puzzleRating)), AsyncStorage.setItem(STORAGE_KEYS.onboardingDone, 'yes')]);
   };
   const startSkillCheck = () => { setSkillCheckOpen(true); setTab('home'); };
   const updateProfile = async next => {
@@ -155,13 +169,13 @@ function App() {
       : !onboardingDone
       ? <OnboardingScreen onFinish={finishOnboarding} />
       : tab === 'home'
-        ? <HomeScreen username={username} games={games} onConnect={connect} onRefresh={refresh} syncing={syncing} syncError={syncError} onOpenReview={openReview} onTab={setTab} profile={profile} onStartSkillCheck={startSkillCheck} />
+        ? <HomeScreen username={username} games={games} onConnect={connect} onRefresh={refresh} syncing={syncing} syncError={syncError} onOpenReview={openReview} onTab={navigateTab} profile={profile} onStartSkillCheck={startSkillCheck} onPractice={openPractice} />
         : tab === 'review'
           ? <ReviewScreen username={username} games={games} onOpenReview={openReview} syncing={syncing} onRefresh={refresh} backendReady={isCoachBackendConfigured()} />
           : tab === 'game' && selectedGame
             ? <GameReviewScreen key={selectedGame.url || selectedGame.end_time} game={selectedGame} username={username} onBack={() => setTab('review')} />
             : tab === 'train'
-        ? <TrainScreen key={`train-${trainLaunch}`} onTab={setTab} profile={profile} initialTheme={planTheme} />
+        ? <TrainScreen key={`train-${trainLaunch}`} onTab={navigateTab} profile={profile} initialTheme={planTheme} initialSection={planSection} initialMistakeIds={planMistakeIds} />
               : tab === 'play'
                 ? null
                 : tab === 'progress'
@@ -201,6 +215,7 @@ function App() {
                           : <LibraryScreen onTab={setTab} onBack={() => setTab('learning')} />;
   return (
     <SafeAreaView style={styles.app}>
+      {ready && onboardingDone && <ReminderObserver onOpenToday={() => navigateTab('home')} />}
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
       <View style={styles.topBar}>
         <Pressable onPress={() => setTab('home')} style={styles.brand}>
@@ -241,9 +256,10 @@ function App() {
             return (
               <Pressable
                 key={item.id}
-                onPress={() => setTab(item.id)}
+                onPress={() => navigateTab(item.id)}
                 style={styles.tabItem}
                 accessibilityRole="tab"
+                accessibilityLabel={item.label}
                 accessibilityState={{ selected: active }}
               >
                 <Text style={[styles.tabMark, active && styles.tabMarkActive]}>{item.mark}</Text>

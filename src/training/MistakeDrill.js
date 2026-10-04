@@ -7,6 +7,7 @@ import { STORAGE_KEYS, setJSON } from '../storage/keys';
 import { loadAutoSaveBlunders, loadMistakes } from './mistakes';
 import { dueRecords, getDueCount, nextState } from './scheduler';
 import styles from './MistakeDrill.styles';
+import { readToday, recordActivity } from '../activity/store';
 
 const normalizeSan = (san) => String(san || '').trim().replace(/[+#?!]+$/g, '').replace(/0/g, 'O');
 
@@ -24,7 +25,7 @@ function whyItMatters(cpLoss) {
   return `Your move gave up about ${pawns} pawns of evaluation. Look for this idea next time.`;
 }
 
-export function MistakeDrill({ onTab }) {
+export function MistakeDrill({ onTab, initialIds }) {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
@@ -42,6 +43,8 @@ export function MistakeDrill({ onTab }) {
   const { width } = useWindowDimensions();
   const gameRef = useRef(new Chess());
   const recordsRef = useRef([]);
+  const startedFromPlan = useRef(false);
+  const processing = useRef(false);
   const mistakesQueue = queue[cursor];
   const current = mistakesQueue ? records.find((record) => record.id === mistakesQueue.id) : null;
   const due = useMemo(() => dueRecords(records), [records]);
@@ -81,7 +84,7 @@ export function MistakeDrill({ onTab }) {
   }, [current?.id, cursor]);
 
   const startSession = () => {
-    const ready = dueRecords(recordsRef.current);
+    const ready = dueRecords(recordsRef.current).filter((record) => !initialIds || initialIds.includes(record.id));
     if (!ready.length) return;
     setQueue(ready.map((record) => ({ id: record.id, retry: false })));
     setCursor(0);
@@ -90,6 +93,7 @@ export function MistakeDrill({ onTab }) {
   };
 
   const persistRecord = async (record, correct) => {
+    await readToday();
     const next = nextState(record, correct, Date.now());
     const updated = recordsRef.current.map((item) => item.id === record.id ? next : item);
     recordsRef.current = updated;
@@ -99,8 +103,15 @@ export function MistakeDrill({ onTab }) {
     return next;
   };
 
+  useEffect(() => {
+    if (!loading && initialIds?.length && !startedFromPlan.current) {
+      startedFromPlan.current = true;
+      startSession();
+    }
+  }, [loading, initialIds]);
+
   const chooseSquare = async (square) => {
-    if (!current || resolved || !sessionActive) return;
+    if (!current || resolved || !sessionActive || processing.current) return;
     const piece = gameRef.current.get(square);
     if (!selected) {
       if (piece?.color === orientation) setSelected(square);
@@ -119,8 +130,13 @@ export function MistakeDrill({ onTab }) {
     const accepted = [current.bestSan, ...(current.altBestSans || [])].map(normalizeSan);
     const correct = accepted.includes(normalizeSan(move.san));
     const wasBox = current.box;
-    const updated = await persistRecord(current, correct);
+    processing.current = true;
+    let updated;
+    try { updated = await persistRecord(current, correct); }
+    catch { Alert.alert('Could not save progress', 'Please try this move again.'); return; }
+    finally { processing.current = false; }
     if (correct) {
+      recordActivity('mistake', current.id).catch(() => Alert.alert('Practice log', 'Today’s activity could not be saved.'));
       gameRef.current.move({ from: move.from, to: move.to, promotion: move.promotion });
       setFen(gameRef.current.fen());
       setBoardVersion((version) => version + 1);
@@ -136,6 +152,7 @@ export function MistakeDrill({ onTab }) {
       ? `The best move was ${current.bestSan}. Try once more. Best line: ${current.bestLine || current.bestSan}.`
       : `The best move was ${current.bestSan}. ${whyItMatters(current.cpLoss)} This position will return once after the other due positions.`);
     if (attempt >= 2) {
+      recordActivity('mistake', current.id).catch(() => Alert.alert('Practice log', 'Today’s activity could not be saved.'));
       setResolved(true);
       setSessionSummary((summary) => ({ ...(summary || { right: 0, wrong: 0, promoted: 0 }), wrong: (summary?.wrong || 0) + 1 }));
       if (!mistakesQueue.retry) setQueue((items) => [...items, { id: current.id, retry: true }]);

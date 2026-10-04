@@ -13,7 +13,13 @@ export const STORAGE_KEYS = {
   mistakes: 'chesscoach.mistakes',
   autoSaveBlunders: 'chesscoach.mistakes.autoSaveBlunders',
   lessons: 'chesscoach.lessons',
+  activity: 'chesscoach.activity',
+  dailyPlans: 'chesscoach.dailyPlans',
+  activityEvents: 'chesscoach.activity.events',
+  pendingAnalysis: 'chesscoach.analysis.pending',
+  reminders: 'chesscoach.reminders',
   analysis: (gameId) => `chesscoach.analysis.${gameId}`,
+  analysisPartial: (gameId) => `chesscoach.analysis.partial.${gameId}`,
   adaptive: (player) => `chesscoach.adaptive.${player || 'guest'}`,
   supabaseGuestSession: 'chesscoach.supabase.guest-session',
 };
@@ -34,4 +40,11 @@ export async function setJSON(key, value) {
   } catch {
     return false;
   }
+}
+
+export async function setManyJSON(entries) {
+  try {
+    await AsyncStorage.multiSet(entries.map(([key, value]) => [key, JSON.stringify(value)]));
+    return true;
+  } catch { return false; }
 }

@@ -319,16 +319,21 @@ export async function analyzeGame({ pgn, game: sourceGame, username, onProgress,
   const cached = await getJSON(cacheKey);
   if (cached?.moves?.length != null) return cached;
   const { moves, positions } = parseGame(game);
-  const evaluations = [];
+  const partialKey = STORAGE_KEYS.analysisPartial(id);
+  const partial = await getJSON(partialKey);
+  const evaluations = partial?.pgn === game.pgn && partial.moveTimeMs === ANALYSIS_CONFIG.moveTimeMs && Array.isArray(partial.evaluations)
+    ? partial.evaluations.slice(0, positions.length) : [];
   const total = positions.length;
-  for (let index = 0; index < total; index += 1) {
+  for (let index = evaluations.length; index < total; index += 1) {
     assertNotAborted(signal);
     const waitingForGame = coachGameActive;
     onProgress?.({ current: index, total, waiting: waitingForGame, message: waitingForGame ? 'Analysis will resume after your game' : `Analyzing position ${index + 1} of ${total}` });
     evaluations.push(await analyzePosition(positions[index], signal, (message) => onProgress?.({ current: index, total, waiting: true, message })));
+    await setJSON(partialKey, { pgn: game.pgn, moveTimeMs: ANALYSIS_CONFIG.moveTimeMs, evaluations });
     onProgress?.({ current: index + 1, total, message: `Analyzed ${index + 1} of ${total} positions` });
   }
   const result = calculateReview(game, moves, positions, evaluations, username);
   await setJSON(cacheKey, result);
+  await setJSON(partialKey, null);
   return result;
 }

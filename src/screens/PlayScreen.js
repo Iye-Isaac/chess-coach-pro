@@ -8,6 +8,7 @@ import { Chess } from 'chess.js';
 import { Badge, Button, ChessBoard, SectionTitle } from '../components';
 import { hasNativeStockfish, useStockfishEngine } from '../engine/useStockfishEngine';
 import { markAnalysisEngineReady, markAnalysisEngineUnavailable, publishEngineOutput, registerAnalysisEngine, setCoachGameActive, withStockfishLock } from '../engine/analyzer';
+import { recordActivity } from '../activity/store';
 
 export function PlayScreen({
   playerRating,
@@ -51,7 +52,7 @@ export function PlayScreen({
   const requestedRatingRef = useRef(requestedRating);
   requestedRatingRef.current = requestedRating;
   useEffect(() => {
-    if (coachPlanLaunch) { setMode('coach'); setGameStarted(false); setError(''); }
+    if (coachPlanLaunch && (!gameStarted || gameRef.current.isGameOver())) { setMode('coach'); setGameStarted(false); setError(''); }
   }, [coachPlanLaunch]);
   useEffect(() => {
     let active = true;
@@ -297,6 +298,7 @@ export function PlayScreen({
       }
     };
     onSaveGame?.(game);
+    if (mode === 'coach') recordActivity('game', id).catch(() => setError('Today’s activity could not be saved.'));
   }, [fen, gameOver, gameStarted, mode, playerColor, status, onSaveGame]);
   if (!gameStarted) return <ScrollView contentContainerStyle={styles.page}>
     <View style={styles.pageIntro}><Badge tone="amber">GAME SETUP</Badge>
