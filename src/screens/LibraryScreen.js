@@ -17,7 +17,7 @@ export function LibraryScreen({
     <View style={styles.pageIntro}><Badge tone="amber">{selected.kind} · STARTER GUIDE</Badge>
         <Text style={styles.pageTitle}>{selected.title}</Text>
         <Text style={styles.pageSubtitle}>{selected.author}</Text></View>
-    <View style={styles.card}><Text style={styles.eyebrow}>THE IDEA</Text>
+    <View style={styles.card}><Text style={styles.eyebrow}>The idea</Text>
         <Text style={styles.cardCopy}>{selected.note}</Text>
         <Text style={styles.cardCopy}>Try this idea in a real position. Ask what your opponent is threatening, then choose a move that improves your pieces while keeping your king safe.</Text>
         <Button title="Put it into practice" onPress={() => onTab(selected.kind === 'TACTICS' ? 'train' : 'play')} />
@@ -25,22 +25,17 @@ export function LibraryScreen({
   </ScrollView>;
   return <ScrollView contentContainerStyle={styles.page}>
     {!!onBack && <Pressable accessibilityRole="button" accessibilityLabel="Back to learning path" onPress={onBack} style={styles.backButton}><Text style={styles.backText}>‹  Learning path</Text></Pressable>}
-    <View style={styles.pageIntro}><Badge tone="amber">A LIBRARY THAT GROWS WITH YOU</Badge>
+    <View style={styles.pageIntro}>
         <Text style={styles.pageTitle}>Learn, your way.</Text>
         <Text style={styles.pageSubtitle}>A few good ideas to carry into your next game.</Text></View>
-    <View style={styles.resourceFeature}><Text style={styles.eyebrowLight}>A GOOD PLACE TO BEGIN</Text>
-        <Text style={styles.resourceFeatureTitle}>Study the whole game.</Text>
-        <Text style={styles.resourceFeatureCopy}>Build a clear foundation in openings, tactics, and endgames. Then connect the lessons to your own games.</Text>
-        <Text style={styles.resourceFeatureMark}>♘</Text></View>
-    <SectionTitle eyebrow="CURATED FOR YOUR STUDY" title="Explore the library" />
-    <TextInput accessibilityLabel="Search library resources" value={query} onChangeText={setQuery} placeholder="Search lessons" placeholderTextColor="#a7a99f" style={styles.input} />
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRail}>{['ALL', 'OPENING', 'TACTICS', 'ENDGAME', 'BOOK'].map(item => <Pressable key={item} accessibilityRole="button" accessibilityLabel={`Show ${item.toLowerCase()} resources`} onPress={() => setCategory(item)} style={[styles.filterChip, category === item && styles.filterChipActive]}><Text style={[styles.filterText, category === item && styles.filterTextActive]}>{item}</Text></Pressable>)}</ScrollView>
+    <SectionTitle eyebrow="Curated for your study" title="Explore the library" />
+    <TextInput accessibilityLabel="Search library resources" value={query} onChangeText={setQuery} placeholder="Search lessons" placeholderTextColor={C.muted} style={styles.input} />
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRail}>{['ALL', 'OPENING', 'TACTICS', 'ENDGAME', 'BOOK'].map(item => <Pressable key={item} accessibilityRole="button" accessibilityLabel={`Show ${item.toLowerCase()} resources`} onPress={() => setCategory(item)} style={[styles.filterChip, category === item && styles.filterChipActive]}><Text style={[styles.filterText, category === item && styles.filterTextActive]}>{item.charAt(0) + item.slice(1).toLowerCase()}</Text></Pressable>)}</ScrollView>
     {visible.map((item, index) => <Pressable key={item.title} accessibilityRole="button" accessibilityLabel={`Read ${item.title}`} onPress={() => setSelected(item)} style={({
       pressed
-    }) => [styles.resourceCard, pressed && styles.pressed]}><View style={[styles.resourceIcon, index % 2 === 0 ? styles.resourceIconGreen : styles.resourceIconAmber]}><Text style={styles.resourceIconText}>{['♜', '♙', '♔', '✦'][index % 4]}</Text></View>
-        <View style={{
+    }) => [styles.resourceCard, pressed && styles.pressed]}><View style={{
         flex: 1
-      }}><Text style={styles.resourceKind}>{item.kind}</Text>
+      }}><Text style={styles.resourceKind}>{item.kind.charAt(0) + item.kind.slice(1).toLowerCase()}</Text>
         <Text style={styles.resourceTitle}>{item.title}</Text>
         <Text style={styles.resourceAuthor}>{item.author}</Text>
         <Text style={styles.resourceNote}>{item.note}</Text></View>

@@ -1,73 +1,73 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   resourceFeature: {
-  minHeight: 181,
-  padding: 17,
+  minHeight: M.n181,
+  padding: S.lg,
   backgroundColor: C.green,
-  borderRadius: 16,
+  borderRadius: R.card,
   overflow: 'hidden',
-  marginBottom: 20
+  marginBottom: S.lg
 },
   resourceFeatureTitle: {
-  color: '#fffdf6',
-  fontSize: 23,
-  fontWeight: '700',
-  letterSpacing: -0.7,
-  marginTop: 11
+  color: C.white,
+  fontSize: F.section,
+  fontWeight: W.semibold,
+  letterSpacing: M.zero,
+  marginTop: S.md
 },
   resourceFeatureCopy: {
-  maxWidth: 255,
-  color: '#d7dfd3',
-  fontSize: 11,
-  lineHeight: 17,
-  marginTop: 8
+  maxWidth: M.n255,
+  color: C.paper,
+  fontSize: F.secondary,
+  lineHeight: T.body,
+  marginTop: S.sm
 },
   resourceFeatureMark: {
   position: 'absolute',
-  right: 8,
-  bottom: -9,
-  fontSize: 83,
-  color: '#d7bb80',
+  right: M.n8,
+  bottom: M.nminus9,
+  fontSize: F.title,
+  color: C.muted,
   opacity: 0.45
 },
   filterRail: {
   flexGrow: 0,
-  marginBottom: 12
+  marginBottom: S.md
 },
   filterChip: {
-  paddingHorizontal: 11,
-  paddingVertical: 8,
-  borderRadius: 20,
+  paddingHorizontal: S.md,
+  paddingVertical: S.sm,
+  borderRadius: R.full,
   backgroundColor: C.soft,
-  marginRight: 6
+  marginRight: S.xs
 },
   filterChipActive: {
   backgroundColor: C.green
 },
   filterText: {
   color: C.muted,
-  fontSize: 9,
-  fontWeight: '800'
+  fontSize: F.secondary,
+  fontWeight: W.semibold
 },
   filterTextActive: {
-  color: '#fff'
+  color: C.white
 },
   resourceCard: {
   flexDirection: 'row',
-  gap: 12,
+  gap: S.md,
   backgroundColor: C.paper,
-  padding: 13,
-  borderWidth: 1,
+  padding: S.md,
+  borderWidth: M.n1,
   borderColor: C.line,
-  borderRadius: 13,
-  marginBottom: 9
+  borderRadius: R.card,
+  marginBottom: S.sm
 },
   resourceIcon: {
-  height: 41,
-  width: 41,
-  borderRadius: 13,
+  height: M.n41,
+  width: M.n41,
+  borderRadius: R.card,
   alignItems: 'center',
   justifyContent: 'center'
 },
@@ -78,32 +78,36 @@ const styles = { ...sharedStyles, ...StyleSheet.create({
   backgroundColor: C.amberSoft
 },
   resourceIconText: {
-  color: C.green,
-  fontSize: 20
+  color: C.ink,
+  fontSize: F.section
 },
   resourceKind: {
   color: C.muted,
-  fontSize: 8,
-  fontWeight: '800',
-  letterSpacing: 1
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  letterSpacing: M.zero
 },
   resourceTitle: {
   color: C.ink,
-  fontSize: 13,
-  fontWeight: '700',
-  marginTop: 3
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  marginTop: S.xs
 },
   resourceAuthor: {
-  color: C.green,
-  fontSize: 10,
-  fontWeight: '600',
-  marginTop: 2
+  color: C.ink,
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  marginTop: S.xs
 },
   resourceNote: {
   color: C.muted,
-  fontSize: 10,
-  lineHeight: 14,
-  marginTop: 5
+  fontSize: F.secondary,
+  lineHeight: T.body,
+  marginTop: S.xs
 }
 }) };
-export default styles;
+
+
+var visualRules = StyleSheet.create({resourceCard:{backgroundColor:C.bg,borderWidth:M.zero,paddingHorizontal:M.zero,marginBottom:S.xl},resourceAuthor:{color:C.muted,fontWeight:W.regular},filterChip:{minHeight:M.n48,justifyContent:'center'},resourceNote:{fontSize:F.body,lineHeight:T.body}});
+
+export default Object.fromEntries(Object.keys({ ...styles, ...visualRules }).map(key => [key, StyleSheet.flatten([styles[key], visualRules[key]])]));
