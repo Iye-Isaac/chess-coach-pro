@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, Switch, Text, View, useWindowDimensions } from 'react-native';
 import { Chess } from 'chess.js';
 import { Badge, Button, ChessBoard } from '../components';
-import { C } from '../theme';
+import { C, S, R, F, W, T, M } from '../theme';
 import { STORAGE_KEYS, setJSON } from '../storage/keys';
 import { loadAutoSaveBlunders, loadMistakes } from './mistakes';
 import { dueRecords, getDueCount, nextState } from './scheduler';
@@ -140,7 +140,7 @@ export function MistakeDrill({ onTab, initialIds }) {
       gameRef.current.move({ from: move.from, to: move.to, promotion: move.promotion });
       setFen(gameRef.current.fen());
       setBoardVersion((version) => version + 1);
-      setSessionSummary((summary) => ({ ...(summary || { right: 0, wrong: 0, promoted: 0 }), right: (summary?.right || 0) + 1, promoted: (summary?.promoted || 0) + (updated.box > wasBox ? 1 : 0) }));
+      setSessionSummary((summary) => ({ ...(summary || { right: M.n0, wrong: 0, promoted: 0 }), right: (summary?.right || 0) + 1, promoted: (summary?.promoted || 0) + (updated.box > wasBox ? 1 : 0) }));
       setFeedback(`Correct. ${current.bestLine || current.bestSan}. ${whyItMatters(current.cpLoss)}`);
       setResolved(true);
       return;
@@ -154,7 +154,7 @@ export function MistakeDrill({ onTab, initialIds }) {
     if (attempt >= 2) {
       recordActivity('mistake', current.id).catch(() => Alert.alert('Practice log', 'Today’s activity could not be saved.'));
       setResolved(true);
-      setSessionSummary((summary) => ({ ...(summary || { right: 0, wrong: 0, promoted: 0 }), wrong: (summary?.wrong || 0) + 1 }));
+      setSessionSummary((summary) => ({ ...(summary || { right: M.n0, wrong: 0, promoted: 0 }), wrong: (summary?.wrong || 0) + 1 }));
       if (!mistakesQueue.retry) setQueue((items) => [...items, { id: current.id, retry: true }]);
     }
   };
@@ -163,7 +163,7 @@ export function MistakeDrill({ onTab, initialIds }) {
     const nextCursor = cursor + 1;
     if (nextCursor >= queue.length) {
       setSessionActive(false);
-      setSessionSummary((summary) => summary || { right: 0, wrong: 0, promoted: 0 });
+      setSessionSummary((summary) => summary || { right: M.n0, wrong: 0, promoted: 0 });
       return;
     }
     setCursor(nextCursor);
@@ -182,7 +182,7 @@ export function MistakeDrill({ onTab, initialIds }) {
 
   return <View>
     <View style={styles.headerCard}>
-      <Text style={styles.eyebrow}>MY MISTAKES</Text>
+      <Text style={styles.eyebrow}>My mistakes</Text>
       <Text style={styles.headerTitle}>{getDueCount(records)} positions due</Text>
       <Text style={styles.headerCopy}>{records.length} saved position{records.length === 1 ? '' : 's'}{!due.length && future.length ? ` · ${nextDueCopy(future[0].dueAt)}` : ''}</Text>
       <View style={styles.settingRow}>
@@ -193,12 +193,12 @@ export function MistakeDrill({ onTab, initialIds }) {
 
     {loading ? <View style={styles.card}><Text style={styles.cardCopy}>Loading your saved positions…</Text></View>
       : sessionSummary && !sessionActive ? <View style={styles.card}>
-        <Badge tone="amber">SESSION COMPLETE</Badge>
+        <Badge tone="amber">Session complete</Badge>
         <Text style={styles.cardTitle}>A little wiser each time.</Text>
         <View style={styles.summaryRow}>
-          <View style={styles.summaryCell}><Text style={styles.summaryValue}>{sessionSummary.right}</Text><Text style={styles.summaryLabel}>RIGHT</Text></View>
-          <View style={styles.summaryCell}><Text style={styles.summaryValue}>{sessionSummary.wrong}</Text><Text style={styles.summaryLabel}>WRONG</Text></View>
-          <View style={styles.summaryCell}><Text style={styles.summaryValue}>{sessionSummary.promoted}</Text><Text style={styles.summaryLabel}>BOXES PROMOTED</Text></View>
+          <View style={styles.summaryCell}><Text style={styles.summaryValue}>{sessionSummary.right}</Text><Text style={styles.summaryLabel}>Right</Text></View>
+          <View style={styles.summaryCell}><Text style={styles.summaryValue}>{sessionSummary.wrong}</Text><Text style={styles.summaryLabel}>Wrong</Text></View>
+          <View style={styles.summaryCell}><Text style={styles.summaryValue}>{sessionSummary.promoted}</Text><Text style={styles.summaryLabel}>Boxes promoted</Text></View>
         </View>
         <Button title="Practice due positions" onPress={startSession} disabled={!due.length} />
         <Button title="Back to training" onPress={resetSession} secondary />

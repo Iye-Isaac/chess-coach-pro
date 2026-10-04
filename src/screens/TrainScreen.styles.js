@@ -1,98 +1,102 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 import sessionStyles from './TrainScreen.extra.styles';
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   drillStat: {
   flexDirection: 'row',
   alignItems: 'center',
-  gap: 10,
-  borderTopWidth: 1,
+  gap: S.sm,
+  borderTopWidth: M.n1,
   borderTopColor: C.line,
-  paddingTop: 12,
-  marginTop: 13
+  paddingTop: S.md,
+  marginTop: S.md
 },
   drillNumber: {
-  color: C.green,
-  fontSize: 23,
-  fontWeight: '700'
+  color: C.ink,
+  fontSize: F.section,
+  fontWeight: W.semibold
 },
   drillStatLabel: {
   color: C.muted,
-  fontSize: 9,
-  fontWeight: '800',
-  letterSpacing: 0.7
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  letterSpacing: M.zero
 },
   puzzleHeading: {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  marginTop: 5
+  marginTop: S.xs
 },
   puzzleTitle: {
   color: C.ink,
-  fontWeight: '700',
-  fontSize: 19,
-  marginTop: 4
+  fontWeight: W.semibold,
+  fontSize: F.section,
+  marginTop: S.xs
 },
   puzzleBadge: {
-  height: 36,
-  width: 36,
-  borderRadius: 12,
+  height: M.n36,
+  width: M.n36,
+  borderRadius: R.card,
   backgroundColor: C.amberSoft,
   alignItems: 'center',
   justifyContent: 'center'
 },
   puzzleBadgeText: {
-  color: '#92691f',
-  fontWeight: '800',
-  fontSize: 12
+  color: C.muted,
+  fontWeight: W.semibold,
+  fontSize: F.secondary
 },
   puzzlePrompt: {
   color: C.muted,
-  fontSize: 12,
-  marginTop: 6,
-  marginBottom: 12
+  fontSize: F.secondary,
+  marginTop: S.xs,
+  marginBottom: S.md
 },
   puzzleBoardWrap: {
   alignItems: 'center'
 },
   feedbackBox: {
   flexDirection: 'row',
-  gap: 8,
+  gap: S.sm,
   alignItems: 'center',
-  backgroundColor: '#f4f0e6',
-  padding: 12,
-  borderRadius: 10,
-  marginTop: 12,
-  marginBottom: 9
+  backgroundColor: C.paper,
+  padding: S.md,
+  borderRadius: R.small,
+  marginTop: S.md,
+  marginBottom: S.sm
 },
   feedbackSuccess: {
-  backgroundColor: '#e8f0e4'
+  backgroundColor: C.paper
 },
   feedbackMark: {
-  color: C.amber,
-  fontSize: 15
+  color: C.muted,
+  fontSize: F.body
 },
   feedbackText: {
   color: C.ink,
-  fontSize: 11,
-  lineHeight: 16,
+  fontSize: F.secondary,
+  lineHeight: T.body,
   flex: 1
 },
   drillCard: {
-  marginTop: 22,
-  padding: 16,
+  marginTop: S.xl,
+  padding: S.lg,
   backgroundColor: C.paper,
-  borderWidth: 1,
+  borderWidth: M.n1,
   borderColor: C.line,
-  borderRadius: 14
+  borderRadius: R.card
 },
   drillTitle: {
   color: C.ink,
-  fontSize: 16,
-  fontWeight: '700',
-  marginTop: 4
+  fontSize: F.body,
+  fontWeight: W.semibold,
+  marginTop: S.xs
 }
 }), ...sessionStyles };
-export default styles;
+
+
+var visualRules = StyleSheet.create({ratingStrip:{backgroundColor:C.bg,borderWidth:M.zero,padding:M.zero,marginBottom:S.xl},ratingValue:{color:C.ink},themeRow:{minHeight:M.n64,borderWidth:M.zero,backgroundColor:C.bg,paddingHorizontal:M.zero},ratingCallout:{backgroundColor:C.soft},sessionSummaryGrid:{backgroundColor:C.bg,flexWrap:'wrap',gap:S.lg},streakText:{color:C.muted}});
+
+export default Object.fromEntries(Object.keys({ ...styles, ...visualRules }).map(key => [key, StyleSheet.flatten([styles[key], visualRules[key]])]));

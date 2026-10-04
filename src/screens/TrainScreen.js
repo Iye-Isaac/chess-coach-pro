@@ -335,7 +335,7 @@ export function TrainScreen({ onTab, profile, initialTheme, initialSection, init
   return (
     <ScrollView contentContainerStyle={styles.page}>
       <View style={styles.pageIntro}>
-        <Badge tone="amber">TRAIN WITH PURPOSE</Badge>
+
         <Text style={styles.pageTitle}>Make the next move.</Text>
         <Text style={styles.pageSubtitle}>Small, consistent practice is how good instincts grow.</Text>
       </View>
@@ -385,7 +385,7 @@ export function TrainScreen({ onTab, profile, initialTheme, initialSection, init
         <MistakeDrill onTab={onTab} initialIds={initialMistakeIds} />
       ) : section === 'openings' ? (
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>OPENING PRACTICE</Text>
+          <Text style={styles.eyebrow}>Opening practice</Text>
           <Text style={styles.cardTitle}>Play the first moves with a plan.</Text>
           <Text style={styles.cardCopy}>For now, practise these three habits in your next game: claim or challenge the centre, develop knights and bishops, then castle before launching an attack.</Text>
           {['Control the centre', 'Develop a piece each move', 'Keep your king safe'].map((item, index) => (
@@ -399,20 +399,20 @@ export function TrainScreen({ onTab, profile, initialTheme, initialSection, init
         </View>
       ) : sessionSummary ? (
         <View style={styles.card}>
-          <Badge tone="amber">SESSION COMPLETE</Badge>
+
           <Text style={styles.cardTitle}>Five thoughtful puzzles.</Text>
           <View style={styles.sessionSummaryGrid}>
             <View style={styles.sessionSummaryCell}>
               <Text style={styles.sessionSummaryValue}>{sessionResults.filter((item) => item.solved).length}</Text>
-              <Text style={styles.drillStatLabel}>SOLVED</Text>
+              <Text style={styles.drillStatLabel}>Solved</Text>
             </View>
             <View style={styles.sessionSummaryCell}>
               <Text style={styles.sessionSummaryValue}>{Math.round((sessionResults.filter((item) => item.solved).length / SESSION_LENGTH) * 100)}%</Text>
-              <Text style={styles.drillStatLabel}>ACCURACY</Text>
+              <Text style={styles.drillStatLabel}>Accuracy</Text>
             </View>
             <View style={styles.sessionSummaryCell}>
               <Text style={styles.sessionSummaryValue}>{puzzleRating - sessionRatingStart > 0 ? '+' : ''}{puzzleRating - sessionRatingStart}</Text>
-              <Text style={styles.drillStatLabel}>RATING</Text>
+              <Text style={styles.drillStatLabel}>Rating</Text>
             </View>
           </View>
           <Text style={styles.bodyMuted}>Themes to revisit: {missedThemes.length ? missedThemes.map(themeLabel).join(', ') : 'None this session'}.</Text>
@@ -423,17 +423,17 @@ export function TrainScreen({ onTab, profile, initialTheme, initialSection, init
         <View>
           <View style={styles.ratingStrip}>
             <View>
-              <Text style={styles.eyebrow}>PUZZLE RATING</Text>
+              <Text style={styles.eyebrow}>Puzzle rating</Text>
               <Text style={styles.ratingValue}>{puzzleRating}</Text>
             </View>
             <View style={styles.sessionMarker}>
-              <Text style={styles.sessionMarkerText}>PUZZLE {Math.min(currentIndex + 1, SESSION_LENGTH)} / {SESSION_LENGTH}</Text>
-              <Text style={styles.streakText}>{streak ? `🔥 ${streak} in a row` : 'Build your streak'}</Text>
+              <Text style={styles.sessionMarkerText}>Puzzle {Math.min(currentIndex + 1, SESSION_LENGTH)} / {SESSION_LENGTH}</Text>
+              <Text style={styles.streakText}>{streak ? `${streak} in a row` : 'Build your streak'}</Text>
             </View>
           </View>
           <View style={styles.puzzleHeading}>
             <View>
-              <Text style={styles.eyebrow}>{opponentThinking ? 'THE POSITION IS SETTING UP' : 'YOUR TURN'}</Text>
+              <Text style={styles.eyebrow}>{opponentThinking ? 'The position is setting up' : 'Your turn'}</Text>
               <Text style={styles.puzzleTitle}>{gameRef.current.turn() === 'w' ? 'White' : 'Black'} to move</Text>
             </View>
             <View style={styles.puzzleBadge}><Text style={styles.puzzleBadgeText}>{String(currentIndex + 1).padStart(2, '0')}</Text></View>
@@ -474,14 +474,14 @@ export function TrainScreen({ onTab, profile, initialTheme, initialSection, init
         </View>
       ) : (
         <View style={styles.card}>
-          <Badge tone="amber">FIVE PUZZLES · OFFLINE</Badge>
+
           <Text style={styles.cardTitle}>Build your tactical instincts.</Text>
           <Text style={styles.cardCopy}>Your puzzle rating adjusts as you solve. Each session uses new positions from the offline library.</Text>
           <View style={styles.ratingCallout}>
-            <Text style={styles.ratingCalloutLabel}>CURRENT PUZZLE RATING</Text>
+            <Text style={styles.ratingCalloutLabel}>Current puzzle rating</Text>
             <Text style={styles.ratingValue}>{puzzleRating}</Text>
           </View>
-          <Text style={styles.drillStatLabel}>{learnedCount} PUZZLES SOLVED ON THIS DEVICE</Text>
+          <Text style={styles.drillStatLabel}>{learnedCount} puzzles solved on this device</Text>
           <Button title="Start a 5-puzzle session" onPress={() => startSession()} busy={!storageReady} />
           {!!notice && <Text style={styles.errorText}>{notice}</Text>}
           {!puzzlesForTheme(null).length && <Text style={styles.errorText}>The offline puzzle set has not been built yet.</Text>}
