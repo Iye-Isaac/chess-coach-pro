@@ -3,7 +3,7 @@ import { Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { Chess } from 'chess.js';
 import puzzles from '../data/puzzles.json';
 import { ChessBoard, Button } from '../components';
-import { C } from '../theme';
+import { C, S, R, F, W, T, M } from '../theme';
 import { moveToUci, ratingAfterPuzzle, uciToMove } from '../puzzles/catalog';
 
 const pick = (rating, used) => {
@@ -92,15 +92,15 @@ export function DiagnosticStep({ startingRating, onComplete, onSkip }) {
     else { setSelected(null); setLegal([]); }
   };
   const finishEarly = () => { if (!finished.current) { finished.current = true; onSkip({ estimatedRating: estimate.current, answers: answers.current }); } };
-  return <View style={{ gap: 14 }}>
+  return <View style={{ gap: S.md }}>
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Text style={{ color: C.ink, fontWeight: '700' }}>Puzzle {Math.min(index, 5)} of 5</Text>
-      <Text style={{ color: seconds <= 10 ? C.amber : C.muted, fontWeight: '700' }} accessibilityRole="timer">{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</Text>
+      <Text style={{ fontSize: F.body, lineHeight: T.body, color: C.ink, fontWeight: W.semibold }}>Puzzle {Math.min(index, 5)} of 5</Text>
+      <Text style={{ fontSize: F.body, lineHeight: T.body, color: seconds <= 10 ? C.amber : C.muted, fontWeight: W.semibold }} accessibilityRole="timer">{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</Text>
     </View>
-    <Text style={{ color: C.muted }}>{ready ? `${game.current.turn() === 'w' ? 'White' : 'Black'} to move` : 'Get ready…'} · Difficulty ${difficulty.current}</Text>
+    <Text style={{ fontSize: F.body, lineHeight: T.body, color: C.muted }}>{ready ? `${game.current.turn() === 'w' ? 'White' : 'Black'} to move` : 'Get ready…'} · Difficulty ${difficulty.current}</Text>
     {puzzle && <ChessBoard game={game.current} fen={fen} width={Math.min(width - 48, 430)} orientation={game.current.turn()} selected={selected} legalMoves={legal} onSquare={onSquare} />}
-    {!!feedback && <Text style={{ color: C.ink, minHeight: 24 }}>{feedback}</Text>}
-    {answered ? <Button title={index >= 5 ? 'See my results' : 'Continue'} onPress={next} /> : <Text style={{ color: C.muted }}>Take your time. Choose one move.</Text>}
-    <Pressable accessibilityRole="button" accessibilityLabel="Skip diagnostic" onPress={finishEarly} style={{ alignSelf: 'center', padding: 10 }}><Text style={{ color: C.muted, textDecorationLine: 'underline' }}>Skip diagnostic</Text></Pressable>
+    {!!feedback && <Text style={{ fontSize: F.body, lineHeight: T.body, color: C.ink, minHeight: M.n24 }}>{feedback}</Text>}
+    {answered ? <Button title={index >= 5 ? 'See my results' : 'Continue'} onPress={next} /> : <Text style={{ fontSize: F.body, lineHeight: T.body, color: C.muted }}>Take your time. Choose one move.</Text>}
+    <Pressable accessibilityRole="button" accessibilityLabel="Skip diagnostic" onPress={finishEarly} style={{ alignSelf: 'center', padding: S.sm }}><Text style={{ fontSize: F.body, lineHeight: T.body, color: C.muted, textDecorationLine: 'underline' }}>Skip diagnostic</Text></Pressable>
   </View>;
 }
