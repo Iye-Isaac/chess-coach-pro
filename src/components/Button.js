@@ -1,44 +1,44 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   button: {
-  minHeight: 46,
-  borderRadius: 10,
+  minHeight: M.n48,
+  borderRadius: R.small,
   justifyContent: 'center',
   alignItems: 'center',
-  paddingHorizontal: 15,
+  paddingHorizontal: S.lg,
   flexDirection: 'row',
-  marginTop: 5
+  marginTop: S.xs
 },
   buttonSecondary: {
-  backgroundColor: '#f4f5f0',
-  borderWidth: 1,
-  borderColor: C.line
+  backgroundColor: C.paper,
+  borderWidth: M.n1,
+  borderColor: C.muted
 },
   buttonPrimary: {
   backgroundColor: C.green
 },
   buttonCompact: {
-  minHeight: 39,
-  paddingHorizontal: 11,
-  marginTop: 0
+  minHeight: M.n48,
+  paddingHorizontal: S.md,
+  marginTop: M.zero
 },
   buttonDisabled: {
   opacity: 0.48
 },
   buttonText: {
-  color: '#ffffff',
-  fontWeight: '700',
-  fontSize: 13
+  color: C.white,
+  fontWeight: W.semibold,
+  fontSize: F.body
 },
   buttonTextSecondary: {
-  color: C.green
+  color: C.ink
 },
   buttonTextCompact: {
-  fontSize: 12
+  fontSize: F.secondary
 }
 }) };
 
@@ -53,8 +53,8 @@ export function Button({
 }) {
   return <Pressable accessibilityRole="button" accessibilityLabel={title} onPress={onPress} disabled={disabled || busy} style={({
     pressed
-  }) => [styles.button, secondary ? styles.buttonSecondary : styles.buttonPrimary, compact && styles.buttonCompact, (disabled || busy) && styles.buttonDisabled, pressed && !disabled && styles.pressed, style]}>
-      {busy ? <ActivityIndicator color={secondary ? C.green : '#fff'} size="small" /> : <Text style={[styles.buttonText, secondary && styles.buttonTextSecondary, compact && styles.buttonTextCompact]}>{title}</Text>}
+  }) => [styles.button, secondary ? styles.buttonSecondary : styles.buttonPrimary, compact && styles.buttonCompact, (disabled || busy) && styles.buttonDisabled, pressed && !disabled && [styles.pressed, !secondary && { backgroundColor: C.green2 }], style]}>
+      {busy ? <ActivityIndicator color={secondary ? C.green : C.white} size="small" /> : <Text style={[styles.buttonText, secondary && styles.buttonTextSecondary, compact && styles.buttonTextCompact]}>{title}</Text>}
     </Pressable>;
 }
 

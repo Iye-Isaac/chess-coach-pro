@@ -1,39 +1,39 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { C, PIECE_NAMES, sharedStyles } from '../theme';
+import { C, PIECE_NAMES, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   empty: {
-  alignItems: 'center',
-  paddingVertical: 20,
-  paddingHorizontal: 9
+  alignItems: 'flex-start',
+  paddingVertical: S.lg,
+  paddingHorizontal: S.sm
 },
   emptyMark: {
-  width: 46,
-  height: 46,
-  borderRadius: 16,
+  width: M.n46,
+  height: M.n46,
+  borderRadius: R.card,
   backgroundColor: C.amberSoft,
-  alignItems: 'center',
+  alignItems: 'flex-start',
   justifyContent: 'center',
-  marginBottom: 11
+  marginBottom: S.md
 },
   emptyMarkText: {
-  color: '#94651b',
-  fontSize: 23
+  color: C.muted,
+  fontSize: F.section
 },
   emptyTitle: {
   color: C.ink,
-  fontWeight: '700',
-  fontSize: 14,
-  textAlign: 'center'
+  fontWeight: W.semibold,
+  fontSize: F.secondary,
+  textAlign: 'left'
 },
   emptyDetail: {
   color: C.muted,
-  fontSize: 11,
-  lineHeight: 16,
-  textAlign: 'center',
-  marginTop: 5
+  fontSize: F.secondary,
+  lineHeight: T.body,
+  textAlign: 'left',
+  marginTop: S.xs
 }
 }) };
 
@@ -43,9 +43,8 @@ export function Empty({
   detail
 }) {
   return <View style={styles.empty}>
-    <View style={styles.emptyMark}><Text style={styles.emptyMarkText}>{mark}</Text></View>
+
     <Text style={styles.emptyTitle}>{title}</Text>
         <Text style={styles.emptyDetail}>{detail}</Text>
   </View>;
 }
-

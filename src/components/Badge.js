@@ -1,30 +1,30 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { C, PIECE_NAMES, sharedStyles } from '../theme';
+import { C, PIECE_NAMES, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   badge: {
-  backgroundColor: C.greenSoft,
-  borderRadius: 99,
-  paddingHorizontal: 9,
-  paddingVertical: 5,
+  backgroundColor: C.bg,
+  borderRadius: R.full,
+  paddingHorizontal: S.sm,
+  paddingVertical: S.xs,
   alignSelf: 'flex-start'
 },
   badgeAmber: {
-  backgroundColor: '#f3e7d0'
+  backgroundColor: C.bg
 },
   badgeNeutral: {
-  backgroundColor: C.soft
+  backgroundColor: C.bg
 },
   badgeText: {
-  color: C.green,
-  fontSize: 9,
-  fontWeight: '800',
-  letterSpacing: 0.9
+  color: C.ink,
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  letterSpacing: M.zero
 },
   badgeTextAmber: {
-  color: '#87601e'
+  color: C.muted
 },
   badgeTextNeutral: {
   color: C.muted
