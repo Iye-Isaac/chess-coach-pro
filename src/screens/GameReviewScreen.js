@@ -5,7 +5,7 @@ import { Chess } from 'chess.js';
 import styles from './GameReviewScreen.styles';
 import { C, S, R, F, W, T, M } from '../theme';
 import { Badge, Button, Empty, ChessBoard } from '../components';
-import { isCoachBackendConfigured, requestGameAnalysis } from '../services/coachApi';
+import { requestGameAnalysis } from '../services/offlineCoach';
 import { gameDate, opponentName } from '../services/chessCom';
 import { ANALYSIS_CONFIG, analyzeGame } from '../engine/analyzer';
 import { getJSON, STORAGE_KEYS } from '../storage/keys';
@@ -93,15 +93,33 @@ export function GameReviewScreen({ game, username, onBack }) {
   const [error, setError] = useState('');
   const [review, setReview] = useState(null);
   const [coachBusy, setCoachBusy] = useState(false);
+  const [coachError, setCoachError] = useState('');
   const [savedMoments, setSavedMoments] = useState({});
   const [autoSaveBlunders, setAutoSaveBlunders] = useState(null);
   const [currentPly, setCurrentPly] = useState(0);
+  const [showBestPosition, setShowBestPosition] = useState(false);
   const controller = useRef(null);
+  const coachController = useRef(null);
   const autoSavedGameRef = useRef(null);
   const { width } = useWindowDimensions();
-  const backendReady = isCoachBackendConfigured();
   const gameId = String(game.id || game.url || `${game.end_time || game.date}-${game.white?.username || ''}-${game.black?.username || ''}`);
-  const selectPly = useCallback((ply) => setCurrentPly(ply), []);
+  const selectPly = useCallback((ply) => {
+    setShowBestPosition(false);
+    setCurrentPly(ply);
+  }, []);
+  const coachInput = useMemo(() => analysis ? {
+    criticalMoments: analysis.criticalMoments.map(({ fenBefore, san, bestSan, cpLoss, phase, bestLine, winPctDrop, moveNumber }) => ({ fen: fenBefore, playedSan: san, bestSan, cpLoss, phase, bestLine, winPctDrop, moveNumber })),
+    stats: { whiteAccuracy: analysis.white.accuracy, blackAccuracy: analysis.black.accuracy, plies: analysis.totalPlies, userColor: analysis.userColor || null },
+  } : null, [analysis]);
+
+  useEffect(() => {
+    let active = true;
+    setReview(null);
+    setCoachError('');
+    if (coachInput) requestGameAnalysis({ gameId, ...coachInput }).then((notes) => { if (active) setReview(notes); })
+      .catch(() => { if (active) setCoachError('Could not prepare coaching notes. Try again.'); });
+    return () => { active = false; coachController.current?.abort(); };
+  }, [gameId, coachInput]);
 
   const load = useCallback(async () => {
     controller.current?.abort();
@@ -166,8 +184,9 @@ export function GameReviewScreen({ game, username, onBack }) {
   const position = analysis?.positions?.[currentPly];
   const activeMove = analysis?.moves?.[currentPly - 1];
   const arrowIsUseful = activeMove && ['inaccuracy', 'mistake', 'blunder'].includes(activeMove.classification);
-  const boardPosition = arrowIsUseful ? activeMove.fenBefore : position;
-  const moveHighlight = activeMove?.uci ? [activeMove.uci.slice(0, 2), activeMove.uci.slice(2, 4)] : [];
+  const showingBest = arrowIsUseful && showBestPosition;
+  const boardPosition = showingBest ? activeMove.fenBefore : position;
+  const moveHighlight = !showingBest && activeMove?.uci ? [activeMove.uci.slice(0, 2), activeMove.uci.slice(2, 4)] : [];
   const boardGame = useMemo(() => {
     try { return boardPosition ? new Chess(boardPosition) : new Chess(); } catch { return new Chess(); }
   }, [boardPosition]);
@@ -179,18 +198,18 @@ export function GameReviewScreen({ game, username, onBack }) {
   })) : [];
 
   const askCoach = async () => {
-    if (!analysis || !backendReady) return;
+    if (!analysis) return;
     setCoachBusy(true);
-    setError('');
+    setCoachError('');
     try {
+      const abortController = new AbortController();
+      coachController.current = abortController;
       const result = await requestGameAnalysis({
-        username,
-        criticalMoments: analysis.criticalMoments.map(({ fenBefore, san, bestSan, cpLoss, phase }) => ({ fen: fenBefore, playedSan: san, bestSan, cpLoss, phase })),
-        stats: { whiteAccuracy: analysis.white.accuracy, blackAccuracy: analysis.black.accuracy, plies: analysis.totalPlies },
+        ...coachInput, username, gameId, signal: abortController.signal,
       });
-      setReview(result);
+      if (!abortController.signal.aborted) setReview(result);
     } catch (err) {
-      setError(err.message || 'The written coach could not complete this review.');
+      if (err.name !== 'AbortError') setCoachError(err.message || 'The written coach could not complete this review.');
     } finally {
       setCoachBusy(false);
     }
@@ -242,12 +261,13 @@ export function GameReviewScreen({ game, username, onBack }) {
 
       <View style={styles.boardCard}>
         <View style={styles.boardHead}><Text style={styles.boardTitle}>Move {currentPly ? `${Math.ceil(currentPly / 2)}${currentPly % 2 ? '…' : '.'}` : '0'}</Text><Text style={styles.boardEval}>{currentPly ? `${activeMove?.san || ''}  ·  ${LABELS[activeMove?.classification] || 'Position'}` : 'Starting position'}</Text></View>
-        <ChessBoard game={boardGame} fen={boardPosition} selected={null} legalMoves={[]} onSquare={NOOP} width={boardWidth} orientation={analysis.userColor || 'w'} bestMove={arrowIsUseful ? activeMove.bestUci : null} bestMoveColor={COLORS.best} highlightedSquares={moveHighlight} highlightColor={COLORS[activeMove?.classification] || COLORS.best} />
+        <ChessBoard game={boardGame} fen={boardPosition} selected={null} legalMoves={[]} onSquare={NOOP} width={boardWidth} orientation={analysis.userColor || 'w'} bestMove={showingBest ? activeMove.bestUci : null} bestMoveColor={COLORS.best} highlightedSquares={moveHighlight} highlightColor={COLORS[activeMove?.classification] || COLORS.best} />
+        {arrowIsUseful && <Button secondary title={showingBest ? 'Show played move' : 'Show best move'} onPress={() => setShowBestPosition((value) => !value)} />}
         <View style={styles.reviewLegend}>{Object.entries(LABELS).map(([kind, label]) => <View key={kind} style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: COLORS[kind] }]} /><Text style={styles.legendLabel}>{label}</Text></View>)}</View>
         <View style={styles.stepRow}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Previous move" onPress={() => setCurrentPly((ply) => Math.max(0, ply - 1))} style={styles.stepButton}><Text style={styles.stepText}>‹  Previous</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Previous move" onPress={() => selectPly(Math.max(0, currentPly - 1))} style={styles.stepButton}><Text style={styles.stepText}>‹  Previous</Text></Pressable>
           <Text style={styles.plyText}>{currentPly} / {analysis.totalPlies}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Next move" onPress={() => setCurrentPly((ply) => Math.min(analysis.totalPlies, ply + 1))} style={styles.stepButton}><Text style={styles.stepText}>Next  ›</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Next move" onPress={() => selectPly(Math.min(analysis.totalPlies, currentPly + 1))} style={styles.stepButton}><Text style={styles.stepText}>Next  ›</Text></Pressable>
         </View>
         {activeMove && <Text style={styles.bestMoveNote}>Played {activeMove.san} · Best was {activeMove.bestSan}{activeMove.cpLoss ? ` · ${Math.round(activeMove.cpLoss)} cp lost` : ''}</Text>}
       </View>
@@ -266,10 +286,24 @@ export function GameReviewScreen({ game, username, onBack }) {
     </View>}
 
     {error && analysis && <Text style={styles.errorText}>{error}</Text>}
-    {analysis && <View style={styles.coachCard}><View style={styles.coachHead}><View style={{ flex: 1 }}><Text style={styles.coachTitle}>Written coach notes</Text><Text style={styles.coachCopy}>Optional feedback based only on the engine-verified critical moments above.</Text></View><Text style={styles.coachMark}>✦</Text></View>
-      {review ? <><Text style={styles.coachSummary}>{review.overall_summary}</Text>{['opening_review', 'middlegame_review', 'endgame_review'].map((key) => review[key] ? <Text key={key} style={styles.coachPhase}>{review[key]}</Text> : null)}</> : <Button title={coachBusy ? 'Coach is writing…' : backendReady ? 'Ask the written coach' : 'AI coach setup needed'} onPress={askCoach} disabled={!backendReady || coachBusy} secondary />}
+    {analysis && <View style={styles.coachCard}>
+      <View style={styles.coachHead}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.coachTitle}>Offline coach notes</Text>
+          <Text style={styles.coachCopy}>Based on Stockfish’s verified moments. No internet or account needed.</Text>
+        </View>
+      </View>
+      {review ? <>
+        <Text style={styles.coachSummary}>{review.overall_summary}</Text>
+        {['opening', 'middlegame', 'endgame'].map((phase) => review[`${phase}_review`] ?
+          <Text key={phase} style={styles.coachPhase}>
+            {review[`${phase}_review`]}
+            {review[`${phase}_lessons`]?.length ? `\n\nPractice: ${review[`${phase}_lessons`].join(' ')}` : ''}
+          </Text> : null)}
+      </> : <Button title={coachBusy ? 'Preparing notes…' : 'Prepare coaching notes'} onPress={askCoach} disabled={coachBusy} secondary />}
       {coachBusy && <ActivityIndicator color={C.green} />}
-      {!backendReady && !review && <Text style={styles.cardCopy}>Local engine analysis is complete. Connect the optional coach service in app setup to request written notes.</Text>}
+      {coachBusy && <Button title="Cancel coaching notes" secondary onPress={() => coachController.current?.abort()} />}
+      {!!coachError && <Text accessibilityRole="alert" style={styles.errorText}>{coachError}</Text>}
     </View>}
     <View style={styles.bottomSpace} />
   </ScrollView>;

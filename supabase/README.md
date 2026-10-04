@@ -14,11 +14,17 @@ The phone app only receives a Supabase project URL and publishable key. The Open
    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
    ```
 
-5. Restart the Expo development server. A guest token is created through Supabase Auth on first review; the game PGN is then sent to the protected Edge Function.
+5. Restart the Expo development server (or make a fresh standalone APK after configuring the public values). A guest token is created through Supabase Auth on the first written review. Only up to three engine-verified critical moments and overall accuracy statistics are sent to the protected Edge Function. The full PGN is not sent.
+
+## Use written coaching
+
+Open a local or imported game, finish its on-device Stockfish analysis, then select **Ask the written coach**. Notes are saved under `chesscoach.writtenReview.<gameId>` and are restored offline when the same verified analysis is reopened. Requests can be canceled; expired guest sessions are recreated once. The app reports missing configuration, deployment, authentication, provider quota and timeouts separately.
+
+The function verifies the guest identity through Supabase Auth in addition to gateway verification. Supabase supplies `SUPABASE_URL` and `SUPABASE_ANON_KEY` to deployed functions. Keep `verify_jwt = true`; do not make this function public to bypass authentication errors.
 
 ## Privacy and service limits
 
-- The OpenAI key remains server-side. The mobile app sends the game PGN to the configured Supabase function for review.
+- The OpenAI key remains server-side. The mobile app sends only the listed critical positions/moves/losses/phases and overall statistics.
 - Reviews are generated prose, not Stockfish tactical analysis. The prompt tells the model not to claim engine scores.
 - `store: false` is set in the Responses request. Review the provider and Supabase data terms/settings before shipping to users.
 - For a public release, add request rate limits, abuse monitoring, account deletion/data controls, and a usage budget before enabling AI review for unauthenticated guest accounts.

@@ -20,6 +20,7 @@ export const STORAGE_KEYS = {
   reminders: 'chesscoach.reminders',
   analysis: (gameId) => `chesscoach.analysis.${gameId}`,
   analysisPartial: (gameId) => `chesscoach.analysis.partial.${gameId}`,
+  writtenReview: (gameId) => `chesscoach.writtenReview.${gameId}`,
   adaptive: (player) => `chesscoach.adaptive.${player || 'guest'}`,
   supabaseGuestSession: 'chesscoach.supabase.guest-session',
 };

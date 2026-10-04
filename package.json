@@ -8,6 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "postinstall": "node scripts/patch-stockfish.js",
+    "eas-build-post-install": "node scripts/patch-stockfish.js",
     "test:scheduler": "node scripts/test-scheduler.mjs",
     "validate:lessons": "node scripts/validate-lessons.js",
     "test:activity": "node scripts/test-activity.mjs"
