@@ -1,34 +1,38 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   statsPanel: {
   flexDirection: 'row',
   alignItems: 'center',
   backgroundColor: C.paper,
-  borderRadius: 14,
-  borderWidth: 1,
+  borderRadius: R.card,
+  borderWidth: M.n1,
   borderColor: C.line,
-  paddingVertical: 15,
-  marginBottom: 18
+  paddingVertical: S.lg,
+  marginBottom: S.lg
 },
   progressRow: {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
-  paddingVertical: 8
+  paddingVertical: S.sm
 },
   progressTrack: {
-  height: 8,
+  height: M.n8,
   backgroundColor: C.soft,
-  borderRadius: 5,
+  borderRadius: R.small,
   overflow: 'hidden',
-  marginTop: 4
+  marginTop: S.xs
 },
   progressFill: {
-  height: 8,
-  backgroundColor: '#6c9561',
-  borderRadius: 5
+  height: M.n8,
+  backgroundColor: C.success,
+  borderRadius: R.small
 }
 }) };
-export default styles;
+
+
+var visualRules = StyleSheet.create({statsPanel:{backgroundColor:C.bg,borderWidth:M.zero,alignItems:'flex-start',paddingVertical:S.lg},stat:{alignItems:'flex-start'},statValue:{color:C.ink},statLabel:{fontSize:F.secondary},focusCard:{backgroundColor:C.bg,borderWidth:M.zero,padding:M.zero,marginTop:S.section},roundArrow:{minWidth:M.n48,minHeight:M.n48,borderRadius:R.small,backgroundColor:C.green},progressFill:{backgroundColor:C.green}});
+
+export default Object.fromEntries(Object.keys({ ...styles, ...visualRules }).map(key => [key, StyleSheet.flatten([styles[key], visualRules[key]])]));
