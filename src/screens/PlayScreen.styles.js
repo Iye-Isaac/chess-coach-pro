@@ -1,96 +1,100 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 const styles = { ...sharedStyles, ...StyleSheet.create({
   opponentBar: {
   flexDirection: 'row',
   alignItems: 'center',
-  gap: 10,
-  marginBottom: 9
+  gap: S.sm,
+  marginBottom: S.sm
 },
   avatar: {
-  width: 36,
-  height: 36,
-  borderRadius: 12,
+  width: M.n36,
+  height: M.n36,
+  borderRadius: R.card,
   backgroundColor: C.greenSoft,
   alignItems: 'center',
   justifyContent: 'center'
 },
   avatarText: {
-  color: C.green,
-  fontSize: 19
+  color: C.ink,
+  fontSize: F.section
 },
   engineDot: {
-  width: 8,
-  height: 8,
-  borderRadius: 4
+  width: M.n8,
+  height: M.n8,
+  borderRadius: R.small
 },
   playStatus: {
   flexDirection: 'row',
   alignItems: 'center',
-  gap: 7,
-  marginBottom: 8
+  gap: S.sm,
+  marginBottom: S.sm
 },
   turnDot: {
-  width: 7,
-  height: 7,
-  borderRadius: 4
+  width: M.n7,
+  height: M.n7,
+  borderRadius: R.small
 },
   playStatusText: {
   color: C.ink,
-  fontSize: 11,
-  fontWeight: '700',
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
   flex: 1
 },
   flipText: {
   color: C.muted,
-  fontSize: 10,
-  fontWeight: '700',
-  padding: 5
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  padding: S.xs
 },
   playBoardWrap: {
   alignItems: 'center',
   backgroundColor: C.paper,
-  borderWidth: 1,
+  borderWidth: M.n1,
   borderColor: C.line,
-  borderRadius: 12,
-  padding: 7
+  borderRadius: R.card,
+  padding: S.sm
 },
   playTools: {
   flexDirection: 'row',
-  gap: 8,
-  marginTop: 11,
-  marginBottom: 13
+  gap: S.sm,
+  marginTop: S.md,
+  marginBottom: S.md
 },
   moveList: {
   backgroundColor: C.paper,
-  borderWidth: 1,
+  borderWidth: M.n1,
   borderColor: C.line,
-  borderRadius: 12,
-  padding: 13,
-  marginTop: 12
+  borderRadius: R.card,
+  padding: S.md,
+  marginTop: S.md
 },
   movePairs: {
-  marginTop: 7
+  marginTop: S.sm
 },
   movePair: {
-  minHeight: 26,
+  minHeight: M.n26,
   flexDirection: 'row',
   alignItems: 'center',
-  gap: 12,
-  borderBottomWidth: 1,
-  borderBottomColor: '#f1f1ed'
+  gap: S.md,
+  borderBottomWidth: M.n1,
+  borderBottomColor: C.paper
 },
   moveNumber: {
-  width: 23,
+  width: M.n23,
   color: C.faint,
-  fontSize: 10
+  fontSize: F.secondary
 },
   moveSan: {
-  width: 50,
+  width: M.n50,
   color: C.ink,
-  fontSize: 11,
-  fontWeight: '600'
+  fontSize: F.secondary,
+  fontWeight: W.semibold
 }
 }) };
-export default styles;
+
+
+var visualRules = StyleSheet.create({avatar:{display:'none'},playBoardWrap:{padding:S.sm,borderWidth:M.zero,backgroundColor:C.bg},playTools:{flexDirection:'column',gap:S.sm},movePair:{minHeight:M.n48},flipText:{fontSize:F.secondary},opponentBar:{marginBottom:S.lg}});
+
+export default Object.fromEntries(Object.keys({ ...styles, ...visualRules }).map(key => [key, StyleSheet.flatten([styles[key], visualRules[key]])]));

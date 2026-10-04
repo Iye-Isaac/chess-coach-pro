@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './PlayScreen.styles';
-import { C, PIECE_NAMES } from '../theme';
+import { C, PIECE_NAMES, S, R, F, W, T, M } from '../theme';
 import { getJSON, setJSON, STORAGE_KEYS } from '../storage/keys';
 import { Chess } from 'chess.js';
 import { Badge, Button, ChessBoard, SectionTitle } from '../components';
@@ -301,23 +301,23 @@ export function PlayScreen({
     if (mode === 'coach') recordActivity('game', id).catch(() => setError('Today’s activity could not be saved.'));
   }, [fen, gameOver, gameStarted, mode, playerColor, status, onSaveGame]);
   if (!gameStarted) return <ScrollView contentContainerStyle={styles.page}>
-    <View style={styles.pageIntro}><Badge tone="amber">GAME SETUP</Badge>
+    <View style={styles.pageIntro}>
         <Text style={styles.pageTitle}>Choose your game.</Text>
         <Text style={styles.pageSubtitle}>Play a friend on this device or face an adaptive Stockfish coach.</Text></View>
-    <View style={styles.card}><Text style={styles.eyebrow}>OPPONENT</Text>
-      <Pressable onPress={() => setMode('local')} style={[styles.setupChoice, mode === 'local' && styles.setupChoiceActive]}><Text style={styles.rowTitle}>Pass & play</Text>
+    <View style={styles.card}><Text style={styles.eyebrow}>Opponent</Text>
+      <Pressable accessibilityRole="radio" accessibilityLabel="Pass and play" accessibilityState={{ checked: mode === 'local' }} onPress={() => setMode('local')} style={[styles.setupChoice, mode === 'local' && styles.setupChoiceActive]}><Text style={styles.rowTitle}>Pass & play</Text>
         <Text style={styles.rowSub}>Take turns on this device.</Text></Pressable>
-      <Pressable onPress={() => setMode('coach')} style={[styles.setupChoice, mode === 'coach' && styles.setupChoiceActive]}><Text style={styles.rowTitle}>Adaptive Stockfish Coach</Text>
+      <Pressable accessibilityRole="radio" accessibilityLabel="Adaptive Stockfish coach" accessibilityState={{ checked: mode === 'coach' }} onPress={() => setMode('coach')} style={[styles.setupChoice, mode === 'coach' && styles.setupChoiceActive]}><Text style={styles.rowTitle}>Adaptive Stockfish Coach</Text>
         <Text style={styles.rowSub}>Strength starts from your rating and adjusts from match results.</Text></Pressable>
       {mode === 'coach' && <><Text style={[styles.eyebrow, {
-          marginTop: 17
-        }]}>PLAY AS</Text>
+          marginTop: S.lg
+        }]}>Play as</Text>
         <View style={styles.modeSwitch}>
-        {['w', 'b'].map(color => <Pressable key={color} onPress={() => setPlayerColor(color)} style={[styles.modeOption, playerColor === color && styles.modeOptionActive]}><Text style={[styles.modeText, playerColor === color && styles.modeTextActive]}>{color === 'w' ? 'White' : 'Black'}</Text></Pressable>)}
+        {['w', 'b'].map(color => <Pressable key={color} accessibilityRole="radio" accessibilityLabel={color === 'w' ? 'Play as White' : 'Play as Black'} accessibilityState={{ checked: playerColor === color }} onPress={() => setPlayerColor(color)} style={[styles.modeOption, playerColor === color && styles.modeOptionActive]}><Text style={[styles.modeText, playerColor === color && styles.modeTextActive]}>{color === 'w' ? 'White' : 'Black'}</Text></Pressable>)}
       </View>
         <Text style={styles.bodyMuted}>{playerColor === 'b' ? 'Stockfish will make the first move.' : 'You will make the first move.'}  ·  {playerRating ? `Chess.com rating ${playerRating}` : `Starting target ${startingRating || 1400}`}</Text>
       <View style={[styles.noticeCard, {
-          marginTop: 12
+          marginTop: S.md
         }]}><Text style={styles.noticeIcon}>{engineReady.current ? '✓' : '…'}</Text>
         <View style={{
             flex: 1
@@ -329,7 +329,7 @@ export function PlayScreen({
         <View style={styles.bottomSpace} />
   </ScrollView>;
   return <ScrollView contentContainerStyle={styles.page}>
-    <View style={styles.pageIntro}><Badge tone="amber">PLAY & PRACTISE</Badge>
+    <View style={styles.pageIntro}>
         <Text style={styles.pageTitle}>{mode === 'coach' ? `You are ${playerColor === 'w' ? 'White' : 'Black'}.` : 'Over the board.'}</Text>
         <Text style={styles.pageSubtitle}>{mode === 'coach' ? 'The coach adapts to your rating and results.' : 'Take turns with a friend on this device.'}</Text></View>
     <View style={styles.opponentBar}><View style={styles.avatar}><Text style={styles.avatarText}>{mode === 'coach' ? '♛' : '♙'}</Text></View>
@@ -338,13 +338,13 @@ export function PlayScreen({
       }}><Text style={styles.rowTitle}>{mode === 'coach' ? 'Adaptive Chess Coach' : 'Local game'}</Text>
         <Text style={styles.rowSub}>{mode === 'coach' ? `${engineStatus} · ~${requestedRating} target${playerRating ? ' from rating' : ' starting level'} · ${adaptation.wins}W ${adaptation.draws}D ${adaptation.losses}L` : 'Pass & play · White at bottom'}</Text></View>
         <View style={[styles.engineDot, {
-        backgroundColor: mode === 'coach' && engineReady.current ? '#6c9561' : '#c7a866'
+        backgroundColor: mode === 'coach' && engineReady.current ? C.success : C.warning
       }]} /></View>
     <View style={styles.playStatus}><View style={[styles.turnDot, {
         backgroundColor: gameOver ? C.faint : C.amber
       }]} />
         <Text style={styles.playStatusText}>{busy ? 'Coach is thinking…' : mode === 'coach' && !gameOver ? turn === playerColor ? 'Your move' : 'Coach to move' : status}</Text>
-        <Pressable onPress={() => {
+        <Pressable accessibilityRole="button" accessibilityLabel="Flip board" style={styles.backButton} onPress={() => {
         setOrientation(orientation === 'w' ? 'b' : 'w');
         setSelected(null);
       }}><Text style={styles.flipText}>⇅ Flip</Text></Pressable></View>
@@ -352,13 +352,13 @@ export function PlayScreen({
     <View style={styles.playTools}><Button title="↶ Undo" onPress={undo} secondary compact disabled={!moves.length || busy || gameOver} style={{
         flex: 1
       }} />
-        <Button title="＋ New game" onPress={() => {
+        <Button title="New game" secondary onPress={() => {
         reset();
         setGameStarted(false);
       }} compact style={{
         flex: 1
       }} /></View>
-    {gameOver && <View style={styles.card}><Text style={styles.eyebrow}>GAME COMPLETE</Text>
+    {gameOver && <View style={styles.card}><Text style={styles.eyebrow}>Game complete</Text>
         <Text style={styles.cardTitle}>{status}</Text>
         <Text style={styles.cardCopy}>This game has been saved to your history on this device.</Text>
         <View style={styles.playTools}><Button title="Play again" onPress={startGame} compact style={{
@@ -377,7 +377,7 @@ export function PlayScreen({
       reset();
       setGameStarted(false);
     }} secondary />}
-    <View style={styles.moveList}><Text style={styles.eyebrow}>MOVE LIST</Text>{moves.length ? <View style={styles.movePairs}>{Array.from({
+    <View style={styles.moveList}><Text style={styles.eyebrow}>Move list</Text>{moves.length ? <View style={styles.movePairs}>{Array.from({
           length: Math.ceil(moves.length / 2)
         }, (_, i) => <View key={i} style={styles.movePair}><Text style={styles.moveNumber}>{i + 1}.</Text>
         <Text style={styles.moveSan}>{moves[i * 2]?.san}</Text>
