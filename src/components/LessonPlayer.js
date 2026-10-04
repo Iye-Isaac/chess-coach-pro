@@ -4,7 +4,7 @@ import { Chess } from 'chess.js';
 import { Badge } from './Badge';
 import { Button } from './Button';
 import { ChessBoard } from './ChessBoard';
-import { C } from '../theme';
+import { C, S, R, F, W, T, M } from '../theme';
 import styles from './LessonPlayer.styles';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';

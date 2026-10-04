@@ -69,14 +69,14 @@ export function LessonScreen({ lessonId, onBack, onNextLesson }) {
     <Pressable accessibilityRole="button" accessibilityLabel="Back to learning path" onPress={onBack} style={styles.backButton}><Text style={styles.backText}>‹  Learning path</Text></Pressable>
     {!progressReady ? <View style={styles.loading}><Text style={styles.bodyMuted}>Resuming your lesson…</Text></View>
       : completed ? <View style={styles.completionCard}>
-        <Badge tone="amber">LESSON COMPLETE</Badge>
+        <Badge tone="amber">Lesson complete</Badge>
         <Text style={styles.completionTitle}>A strong step forward.</Text>
         <Text style={styles.stars}>{'★'.repeat(stars)}{'☆'.repeat(3 - stars)}</Text>
         <Text style={styles.completionCopy}>{stars === 3 ? 'No wrong turns this time.' : `${mistakes} ${mistakes === 1 ? 'wrong turn' : 'wrong turns'} helped make the idea stick.`} You can revisit this lesson whenever you like.</Text>
         <Button title={nextLesson ? 'Next lesson' : 'Back to learning path'} onPress={() => nextLesson ? onNextLesson(nextLesson.id) : onBack()} />
         <Button title="Review this lesson" secondary onPress={() => { setCurrentStep(0); setMistakes(0); setCompleted(false); }} />
       </View> : <>
-        <View style={styles.lessonIntro}><Text style={styles.lessonTitle}>{lesson.title}</Text><Text style={styles.lessonSummary}>{lesson.summary}</Text><Text style={styles.lessonMeta}>{lesson.minutes} MIN · {lesson.track.toUpperCase()}</Text></View>
+        <View style={styles.lessonIntro}><Text style={styles.lessonTitle}>{lesson.title}</Text><Text style={styles.lessonSummary}>{lesson.summary}</Text><Text style={styles.lessonMeta}>{lesson.minutes} min · {lesson.track}</Text></View>
         <LessonPlayer
           key={`${lesson.id}-${currentStep}`}
           lesson={lesson}

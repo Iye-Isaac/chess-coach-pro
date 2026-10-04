@@ -1,30 +1,34 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
-export default { ...sharedStyles, ...StyleSheet.create({
-  trackRail: { flexDirection: 'row', padding: 4, backgroundColor: '#eaeae4', borderRadius: 11, marginBottom: 14 },
-  trackTab: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 9, borderRadius: 8 },
-  trackTabActive: { backgroundColor: C.paper, elevation: 1 },
-  trackTabText: { color: C.muted, fontSize: 9, fontWeight: '700' },
-  trackTabTextActive: { color: C.green },
-  progressCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.green, borderRadius: 14, padding: 15, marginBottom: 13 },
-  eyebrow: { color: '#c5d1bf', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
-  progressTitle: { color: '#fffdf6', fontSize: 20, fontWeight: '800', marginTop: 5 },
-  progressMark: { color: '#c8a767', fontSize: 34, marginHorizontal: 7 },
-  lessonNode: { flexDirection: 'row', alignItems: 'center', gap: 11, padding: 12, minHeight: 82, backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 13, marginBottom: 9 },
+const screenStyles = { ...sharedStyles, ...StyleSheet.create({
+  trackRail: { flexDirection: 'row', padding: S.xs, backgroundColor: C.paper, borderRadius: R.card, marginBottom: S.md },
+  trackTab: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: S.sm, borderRadius: R.small },
+  trackTabActive: { backgroundColor: C.paper, elevation: M.zero },
+  trackTabText: { color: C.muted, fontSize: F.secondary, fontWeight: W.semibold },
+  trackTabTextActive: { color: C.ink },
+  progressCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.green, borderRadius: R.card, padding: S.lg, marginBottom: S.md },
+  eyebrow: { color: C.muted, fontSize: F.secondary, fontWeight: W.semibold, letterSpacing: M.zero },
+  progressTitle: { color: C.white, fontSize: F.section, fontWeight: W.semibold, marginTop: S.xs },
+  progressMark: { color: C.muted, fontSize: F.title, marginHorizontal: S.sm },
+  lessonNode: { flexDirection: 'row', alignItems: 'center', gap: S.md, padding: S.md, minHeight: M.n82, backgroundColor: C.paper, borderWidth: M.n1, borderColor: C.line, borderRadius: R.card, marginBottom: S.sm },
   lessonNodeLocked: { opacity: 0.58 },
-  nodeMark: { width: 37, height: 37, borderRadius: 13, backgroundColor: C.amberSoft, alignItems: 'center', justifyContent: 'center' },
+  nodeMark: { width: M.n37, height: M.n37, borderRadius: R.card, backgroundColor: C.amberSoft, alignItems: 'center', justifyContent: 'center' },
   nodeMarkComplete: { backgroundColor: C.greenSoft },
   nodeMarkLocked: { backgroundColor: C.soft },
-  nodeMarkText: { color: '#8b6324', fontSize: 10, fontWeight: '800' },
-  nodeMarkTextComplete: { color: C.green, fontSize: 17 },
+  nodeMarkText: { color: C.muted, fontSize: F.secondary, fontWeight: W.semibold },
+  nodeMarkTextComplete: { color: C.ink, fontSize: F.body },
   nodeCopy: { flex: 1 },
-  nodeTitle: { color: C.ink, fontSize: 12, fontWeight: '800' },
-  nodeSummary: { color: C.muted, fontSize: 10, lineHeight: 14, marginTop: 3 },
-  nodeMeta: { color: C.faint, fontSize: 9, fontWeight: '700', marginTop: 5 },
-  emptyCard: { padding: 16, backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 14, marginBottom: 14 },
-  emptyTitle: { color: C.ink, fontSize: 14, fontWeight: '800' },
-  bodyMuted: { color: C.muted, fontSize: 11, lineHeight: 16, marginTop: 5 },
-  resourcesCard: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, backgroundColor: '#f0f1eb', borderRadius: 13, borderWidth: 1, borderColor: C.line, marginTop: 9 },
-  resourcesTitle: { color: C.ink, fontSize: 15, fontWeight: '800', marginTop: 4 },
+  nodeTitle: { color: C.ink, fontSize: F.secondary, fontWeight: W.semibold },
+  nodeSummary: { color: C.muted, fontSize: F.secondary, lineHeight: T.body, marginTop: S.xs },
+  nodeMeta: { color: C.faint, fontSize: F.secondary, fontWeight: W.semibold, marginTop: S.xs },
+  emptyCard: { padding: S.lg, backgroundColor: C.paper, borderWidth: M.n1, borderColor: C.line, borderRadius: R.card, marginBottom: S.md },
+  emptyTitle: { color: C.ink, fontSize: F.secondary, fontWeight: W.semibold },
+  bodyMuted: { color: C.muted, fontSize: F.secondary, lineHeight: T.body, marginTop: S.xs },
+  resourcesCard: { flexDirection: 'row', alignItems: 'center', gap: S.sm, padding: S.md, backgroundColor: C.paper, borderRadius: R.card, borderWidth: M.n1, borderColor: C.line, marginTop: S.sm },
+  resourcesTitle: { color: C.ink, fontSize: F.body, fontWeight: W.semibold, marginTop: S.xs },
 }) };
+
+const visualRules = StyleSheet.create({trackRail:{flexWrap:'wrap',backgroundColor:C.bg,gap:S.sm},trackTab:{flexBasis:'40%',minHeight:M.n48},trackTabActive:{backgroundColor:C.greenSoft,elevation:M.zero},progressCard:{backgroundColor:C.bg,padding:M.zero,marginBottom:S.section},progressTitle:{color:C.ink},eyebrow:{color:C.muted,fontSize:F.secondary},lessonNode:{backgroundColor:C.bg,borderWidth:M.zero,paddingHorizontal:M.zero,marginBottom:S.lg},lessonNodeLocked:{opacity:1},nodeMark:{backgroundColor:C.soft},nodeMarkText:{color:C.ink},resourcesCard:{flexDirection:'column',alignItems:'stretch',backgroundColor:C.bg,borderWidth:M.zero,padding:M.zero,marginTop:S.section}});
+
+export default Object.fromEntries(Object.keys({ ...screenStyles, ...visualRules }).map(key => [key, StyleSheet.flatten([screenStyles[key], visualRules[key]])]));

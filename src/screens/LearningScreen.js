@@ -60,10 +60,9 @@ export function LearningScreen({ onTab, profile, onOpenLesson, initialTrack }) {
 
     <View style={styles.progressCard}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.eyebrow}>TRACK PROGRESS</Text>
+        <Text style={styles.eyebrow}>Track progress</Text>
         <Text style={styles.progressTitle}>{completed} / {lessons.length || '—'} lessons</Text>
       </View>
-      <Text style={styles.progressMark}>{TRACKS.find((item) => item.id === track)?.mark}</Text>
     </View>
 
     {loading ? <View style={styles.emptyCard}><Text style={styles.bodyMuted}>Loading your lessons…</Text></View>
@@ -94,7 +93,7 @@ export function LearningScreen({ onTab, profile, onOpenLesson, initialTrack }) {
       </View>}
 
     <View style={styles.resourcesCard}>
-      <View style={{ flex: 1 }}><Text style={styles.eyebrow}>KEEP EXPLORING</Text><Text style={styles.resourcesTitle}>More resources</Text><Text style={styles.bodyMuted}>Browse the guides and references in your library.</Text></View>
+      <View style={{ flex: 1 }}><Text style={styles.eyebrow}>Keep exploring</Text><Text style={styles.resourcesTitle}>More resources</Text><Text style={styles.bodyMuted}>Browse the guides and references in your library.</Text></View>
       <Button title="Open library" compact secondary onPress={() => onTab('library')} />
     </View>
     <View style={styles.bottomSpace} />
