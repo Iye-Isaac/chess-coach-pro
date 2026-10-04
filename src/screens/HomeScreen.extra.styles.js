@@ -1,52 +1,52 @@
 import { StyleSheet } from 'react-native';
-import { C, sharedStyles } from '../theme';
+import { C, sharedStyles, S, R, F, W, T, M } from '../theme';
 
 const styles = StyleSheet.create({
   inputLabel: {
   color: C.muted,
-  fontSize: 9,
-  fontWeight: '800',
-  letterSpacing: 1,
-  marginTop: 18,
-  marginBottom: 7
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  letterSpacing: M.zero,
+  marginTop: S.lg,
+  marginBottom: S.sm
 },
   statsStrip: {
   flexDirection: 'row',
   alignItems: 'center',
-  marginVertical: 16,
-  paddingVertical: 12,
-  backgroundColor: '#f8f8f4',
-  borderRadius: 10
+  marginVertical: S.lg,
+  paddingVertical: S.md,
+  backgroundColor: C.white,
+  borderRadius: R.small
 },
   quickGrid: {
   flexDirection: 'row',
   flexWrap: 'wrap',
-  gap: 9,
-  marginBottom: 21
+  gap: S.sm,
+  marginBottom: S.xl
 },
   quickCard: {
   width: '48%',
-  minHeight: 94,
-  borderRadius: 12,
-  borderWidth: 1,
+  minHeight: M.n94,
+  borderRadius: R.card,
+  borderWidth: M.n1,
   borderColor: C.line,
   backgroundColor: C.paper,
-  padding: 12
+  padding: S.md
 },
   quickIcon: {
-  color: C.amber,
-  fontSize: 17
+  color: C.muted,
+  fontSize: F.body
 },
   quickTitle: {
   color: C.ink,
-  fontSize: 11,
-  fontWeight: '700',
-  marginTop: 7
+  fontSize: F.secondary,
+  fontWeight: W.semibold,
+  marginTop: S.sm
 },
   quickNote: {
   color: C.muted,
-  fontSize: 9,
-  marginTop: 3
+  fontSize: F.secondary,
+  marginTop: S.xs
 }
 });
 export default styles;
