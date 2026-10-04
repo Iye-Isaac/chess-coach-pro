@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { Button } from '../components';
-import { C } from '../theme';
+import { C, S, R, F, W, T, M } from '../theme';
 import styles from './ReminderSettings.styles';
 import { enableReminders, getReminderSettings, reminderAvailable, reminderEligible, subscribeReminderSettings, updateReminderSettings } from './service';
 
@@ -57,7 +57,7 @@ export function ReminderSettings() {
     ]);
   };
   return <View style={styles.card}>
-    <Text style={styles.eyebrow}>DAILY PRACTICE</Text>
+    <Text style={styles.eyebrow}>Daily practice</Text>
     <Text style={styles.cardTitle}>Reminders</Text>
     <View style={styles.settingRow}>
       <View style={{ flex: 1 }}><Text style={styles.rowTitle}>A gentle daily reminder</Text>

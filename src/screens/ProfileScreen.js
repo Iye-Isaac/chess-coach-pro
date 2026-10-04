@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import styles from './ProfileScreen.styles';
-import { C, PIECE_NAMES } from '../theme';
+import { C, PIECE_NAMES, S, R, F, W, T, M } from '../theme';
 import { Badge, Button, SectionTitle } from '../components';
 import { ReminderSettings } from '../reminders/ReminderSettings';
 
@@ -16,7 +16,7 @@ export function ProfileScreen({
   onRetakeSkillCheck
 }) {
   return <ScrollView contentContainerStyle={styles.page}>
-    <View style={styles.pageIntro}><Badge tone="amber">YOUR SPACE</Badge>
+    <View style={styles.pageIntro}>
         <Text style={styles.pageTitle}>Profile & settings</Text>
         <Text style={styles.pageSubtitle}>Manage your local preferences and connected game data.</Text></View>
     <View style={styles.card}><View style={styles.profileHero}><View style={styles.largeAvatar}><Text style={styles.largeAvatarText}>{username ? username.slice(0, 1).toUpperCase() : '♘'}</Text></View>
@@ -24,14 +24,14 @@ export function ProfileScreen({
           flex: 1
         }}><Text style={styles.cardTitle}>{username || 'Guest player'}</Text>
         <Text style={styles.bodyMuted}>{rating ? `Recent rating ${rating}` : 'Your progress is saved on this device.'}</Text></View></View>
-      <SectionTitle eyebrow="CURRENT FOCUS" title={profile.goal || 'Improve tactics'} />
+      <SectionTitle eyebrow="Current focus" title={profile.goal || 'Improve tactics'} />
       {['Improve tactics', 'Understand my games', 'Learn openings', 'Learn from scratch'].map(item => <Pressable key={item} accessibilityRole="button" accessibilityLabel={`Set focus to ${item}`} onPress={() => onUpdateProfile({
         ...profile,
         goal: item
       })} style={[styles.setupChoice, profile.goal === item && styles.setupChoiceActive]}><Text style={styles.rowTitle}>{item}</Text></Pressable>)}
       <Text style={[styles.eyebrow, {
-        marginTop: 18
-      }]}>CHESS.COM CONNECTION</Text>
+        marginTop: S.lg
+      }]}>Chess.com connection</Text>
         <Text style={styles.bodyMuted}>{username ? `Connected as ${username}. Only public game data is read.` : 'No account connected.'}</Text>
       {username ? <Button title="Disconnect account" secondary onPress={onDisconnect} /> : <Button title="Connect on Today" secondary onPress={() => onTab('home')} />}
       <Button title="Review your privacy & app setup" secondary onPress={() => onTab('setup')} />
